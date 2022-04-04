@@ -3,10 +3,10 @@ import { Engine } from './core/engine';
 
 let engine: Engine;
 window.onload = () => {
-    engine = new Engine('canvas');
-    engine.start();
+  engine = new Engine();
+  engine.start('canvas');
 };
 
 window.onresize = () => {
-    engine.resize();
+  engine.resize();
 };

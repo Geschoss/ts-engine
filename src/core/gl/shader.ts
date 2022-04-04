@@ -1,6 +1,8 @@
 export class Shader {
   private readonly name: string;
   private readonly program: WebGLProgram;
+  private attributes: Record<string, GLint> = {};
+  private uniforms: Record<string, WebGLUniformLocation> = {};
 
   constructor(name: string, vertexSource: string, fragmentSource: string) {
     this.name = name;
@@ -8,12 +10,31 @@ export class Shader {
     let fragmetnShader = this.loadShader(fragmentSource, gl.FRAGMENT_SHADER);
 
     this.program = this.createProgram(vertexShader, fragmetnShader);
+    this.detectAttributes();
+    this.detectUniform();
   }
 
   use() {
     gl.useProgram(this.program);
   }
+  getAttributeLocation(name: string) {
+    const attribute = this.attributes[name];
+    if (attribute == undefined)
+      throw new Error(
+        `Unable to find attribute named ${name} in shader name ${this.name}`
+      );
 
+    return attribute;
+  }
+  getUnifomrLocation(name: string) {
+    const uniform = this.uniforms[name];
+    if (uniform == undefined)
+      throw new Error(
+        `Unable to find uniform named ${name} in shader name ${this.name}`
+      );
+
+    return uniform;
+  }
   private loadShader(source: string, shaderType: number) {
     let shader = gl.createShader(shaderType);
     if (!shader)
@@ -39,5 +60,33 @@ export class Shader {
     if (error)
       throw new Error(`Error linking shader ${this.name}, error: ${error}`);
     return program;
+  }
+
+  private detectAttributes() {
+    let attributeCout = gl.getProgramParameter(
+      this.program,
+      gl.ACTIVE_ATTRIBUTES
+    );
+    for (let i = 0; i < attributeCout; i++) {
+      let info = gl.getActiveAttrib(this.program, i);
+      if (!info) {
+        break;
+      }
+      this.attributes[info.name] = gl.getAttribLocation(
+        this.program,
+        info.name
+      );
+    }
+  }
+  private detectUniform() {
+    let uniformCout = gl.getProgramParameter(this.program, gl.ACTIVE_UNIFORMS);
+    for (let i = 0; i < uniformCout; i++) {
+      let info = gl.getActiveUniform(this.program, i);
+      if (!info) {
+        break;
+      }
+      // @ts-ignore
+      this.uniforms[info.name] = gl.getUniformLocation(this.program, info.name);
+    }
   }
 }
