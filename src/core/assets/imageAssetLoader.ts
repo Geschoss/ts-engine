@@ -16,7 +16,7 @@ export class ImageAsset implements IAsset {
 }
 
 export class ImageAssetLoader implements IAssetLoader {
-  supportedExtensions: string[] = ['jpg', 'png', 'gif'];
+  supportedExtensions: string[] = ['jpg', 'jpeg', 'png', 'gif'];
 
   loadAsset(assetName: string) {
     let image = new Image();

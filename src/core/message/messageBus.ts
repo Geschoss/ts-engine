@@ -13,7 +13,7 @@ export class MessageBus {
       handlers = [];
       MessageBus.subscriptiions.set(code, handlers);
     }
-    if (handlers.indexOf(handler)) {
+    if (handlers.indexOf(handler) > -1) {
       console.warn(`Attempting to add a duplicate handler to code ${code}`);
     } else {
       handlers.push(handler);
