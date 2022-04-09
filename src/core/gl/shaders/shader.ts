@@ -1,17 +1,11 @@
-export class Shader {
-  private readonly name: string;
-  private readonly program: WebGLProgram;
+export abstract class Shader {
+  private name: string;
+  private program!: WebGLProgram;
   private attributes: Record<string, GLint> = {};
   private uniforms: Record<string, WebGLUniformLocation> = {};
 
-  constructor(name: string, vertexSource: string, fragmentSource: string) {
+  constructor(name: string) {
     this.name = name;
-    let vertexShader = this.loadShader(vertexSource, gl.VERTEX_SHADER);
-    let fragmetnShader = this.loadShader(fragmentSource, gl.FRAGMENT_SHADER);
-
-    this.program = this.createProgram(vertexShader, fragmetnShader);
-    this.detectAttributes();
-    this.detectUniform();
   }
 
   use() {
@@ -35,6 +29,16 @@ export class Shader {
 
     return uniform;
   }
+
+  protected load(vertexSource: string, fragmentSource: string) {
+    let vertexShader = this.loadShader(vertexSource, gl.VERTEX_SHADER);
+    let fragmetnShader = this.loadShader(fragmentSource, gl.FRAGMENT_SHADER);
+
+    this.program = this.createProgram(vertexShader, fragmetnShader);
+    this.detectAttributes();
+    this.detectUniform();
+  }
+
   private loadShader(source: string, shaderType: number) {
     let shader = gl.createShader(shaderType);
     if (!shader)

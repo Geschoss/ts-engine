@@ -1,5 +1,6 @@
 import { GLBuffer } from '../gl/glBuffer';
-import { Shader } from '../gl/shader';
+import { Shader } from '../gl/shaders/shader';
+import { Matrix4x4 } from '../math/matrix4x4';
 import { Vector3 } from '../math/vector3';
 import { Texture } from './texture';
 import { TextureManager } from './textureManager';
@@ -62,6 +63,16 @@ export class Sprite {
   update(time: number) {}
 
   draw(shader: Shader) {
+    let model = shader.getUnifomrLocation('u_model');
+    gl.uniformMatrix4fv(
+      model,
+      false,
+      new Float32Array(Matrix4x4.translation(this.position).data)
+    );
+
+    let color = shader.getUnifomrLocation('u_tint');
+    gl.uniform4f(color, 1, 1, 1, 1);
+
     this.texture.activateAndBind(0);
     let diffuseLocation = shader.getUnifomrLocation('u_diffuse');
     gl.uniform1i(diffuseLocation, 0);
