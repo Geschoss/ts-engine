@@ -4,8 +4,8 @@ import { TextureManager } from './textureManager';
 
 export class Material {
   name: string;
-  diffuseTexture: Texture;
   tint: Color;
+  diffuseTexture: Texture;
   _diffuseTextureName: string;
 
   constructor(name: string, diffuseTextureName: string, tint: Color) {
@@ -17,6 +17,16 @@ export class Material {
   }
 
   get diffuseTextureName() {
-    return this._diffuseTextureName
+    return this._diffuseTextureName;
+  }
+  set diffuseTextureName(value: string) {
+    this._diffuseTextureName = value;
+    this.diffuseTexture = TextureManager.getTexture(this._diffuseTextureName);
+  }
+
+  destroy() {
+    TextureManager.releaseTexture(this._diffuseTextureName);
+    // @ts-ignore
+    this.diffuseTexture = undefined;
   }
 }
