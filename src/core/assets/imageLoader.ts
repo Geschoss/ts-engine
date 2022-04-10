@@ -1,12 +1,14 @@
-import { AssetManager } from './assetManaget';
+import { AssetManager } from './manager';
 
-export class ImageAsset implements IAsset {
-  readonly name: string;
-  readonly data: HTMLImageElement;
+export class ImageAsset implements IAsset<HTMLImageElement> {
+  name: string;
+  data: HTMLImageElement;
+
   constructor(name: string, data: HTMLImageElement) {
     this.name = name;
     this.data = data;
   }
+
   get width() {
     return this.data.width;
   }
@@ -15,10 +17,10 @@ export class ImageAsset implements IAsset {
   }
 }
 
-export class ImageAssetLoader implements IAssetLoader {
+export class ImageLoader implements IAssetLoader {
   supportedExtensions: string[] = ['jpg', 'jpeg', 'png', 'gif'];
 
-  loadAsset(assetName: string) {
+  load(assetName: string) {
     let image = new Image();
     image.onload = this.onImageLoaded.bind(this, assetName, image);
     image.src = assetName;
@@ -27,6 +29,6 @@ export class ImageAssetLoader implements IAssetLoader {
   private onImageLoaded(assetName: string, image: HTMLImageElement) {
     console.log('onImageLoaded: assetName/image', assetName, image);
     let asset = new ImageAsset(assetName, image);
-    AssetManager.onAssetLoader(asset);
+    AssetManager.onLoaded(asset);
   }
 }

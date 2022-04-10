@@ -1,15 +1,15 @@
 import {
   AssetManager,
   MESSAGE_ASSET_LOADER_ASSET_LOADED,
-} from '../assets/assetManaget';
-import { ImageAsset } from '../assets/imageAssetLoader';
-import { Message } from '../message/message';
+} from '../assets/manager';
+import { ImageAsset } from '../assets/imageLoader';
+import { MessageBus } from '../message/bus';
 
 const LEVEL = 0;
 const BORDER = 0;
 const TEMP_IMAGE_DATA = new Uint8Array([255, 255, 255, 255]);
 
-export class Texture implements IMessageHandler {
+export class Texture {
   private handle: WebGLTexture;
   loaded: boolean = false;
   name: string;
@@ -25,7 +25,10 @@ export class Texture implements IMessageHandler {
     if (!handle) throw new Error(`Cannot create texture ${name}`);
     this.handle = handle;
 
-    Message.subscribe(MESSAGE_ASSET_LOADER_ASSET_LOADED + this.name, this);
+    MessageBus.subscribe(
+      MESSAGE_ASSET_LOADER_ASSET_LOADED + this.name,
+      this.onMessage.bind(this)
+    );
 
     this.bind();
     gl.texImage2D(
@@ -39,7 +42,7 @@ export class Texture implements IMessageHandler {
       gl.UNSIGNED_BYTE,
       TEMP_IMAGE_DATA
     );
-    let asset = AssetManager.getAsset(this.name) as ImageAsset;
+    let asset = AssetManager.get(this.name) as ImageAsset;
     if (asset !== undefined) {
       this.loadTextureFromAsset(asset);
     }

@@ -1,4 +1,5 @@
-import { AssetManager } from './assets/assetManaget';
+import { ImageLoader } from './assets/imageLoader';
+import { AssetManager } from './assets/manager';
 import { GLUtilities } from './gl/gl';
 import { BasicShader } from './gl/shaders/basicShader';
 import { Color } from './graphics/color';
@@ -6,7 +7,7 @@ import { Material } from './graphics/material';
 import { MaterialManager } from './graphics/materialManager';
 import { Sprite } from './graphics/sprite';
 import { Matrix4x4 } from './math/matrix4x4';
-import { MessageBus } from './message/messageBus';
+import { MessageBus } from './message/bus';
 
 export class Engine {
   private canvas!: HTMLCanvasElement;
@@ -18,7 +19,7 @@ export class Engine {
 
   start(elementId: string) {
     this.canvas = GLUtilities.initialize(elementId);
-    AssetManager.initialize();
+    AssetManager.register(new ImageLoader());
     gl.clearColor(0, 0, 0, 1);
 
     this.basicShader = new BasicShader();
