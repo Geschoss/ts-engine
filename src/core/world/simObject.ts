@@ -1,3 +1,4 @@
+import { BaseComponent } from '../components/baseComponent';
 import { Shader } from '../gl/shaders/shader';
 import { Matrix4x4 } from '../math/matrix4x4';
 import { Transform } from '../math/transform';
@@ -8,16 +9,17 @@ export class SimObject {
   readonly name: string;
   loaded: boolean = false;
   children: SimObject[] = [];
-  
-  scene?: Scene;
+  components: BaseComponent[] = [];
+
+  scene: Scene;
   parent?: SimObject;
 
-  readonly localMatrix: Matrix4x4 = Matrix4x4.identity();
-  readonly worldMatrix: Matrix4x4 = Matrix4x4.identity();
+  localMatrix: Matrix4x4 = Matrix4x4.identity();
+  worldMatrix: Matrix4x4 = Matrix4x4.identity();
 
   transform: Transform = new Transform();
 
-  constructor(id: number, name: string, scene?: Scene) {
+  constructor(id: number, name: string, scene: Scene) {
     this.id = id;
     this.name = name;
     this.scene = scene;
@@ -47,23 +49,50 @@ export class SimObject {
     }
     return undefined;
   }
+  addComponent(component: BaseComponent) {
+    this.components.push(component);
+    component.setOwner(this);
+  }
   load() {
     this.loaded = true;
+    for (let comp of this.components) {
+      comp.load();
+    }
     for (let child of this.children) {
       child.load();
     }
   }
   update(time: number) {
+    this.localMatrix = this.transform.getTransformationMatrix();
+    this.updateWorldMatrix();
+    for (let comp of this.components) {
+      comp.update(time);
+    }
     for (let child of this.children) {
       child.update(time);
     }
   }
   render(shader: Shader) {
+    for (let comp of this.components) {
+      comp.render(shader);
+    }
     for (let child of this.children) {
       child.render(shader);
     }
   }
   protected onAdded(scene: Scene) {
     this.scene = scene;
+  }
+
+  private updateWorldMatrix() {
+    if (this.parent !== undefined) {
+      this.worldMatrix = Matrix4x4.multiply(
+        this.parent.worldMatrix,
+        this.localMatrix
+      );
+    } else {
+      this.worldMatrix.copyFrom(this.localMatrix);
+      let v = this.worldMatrix;
+    }
   }
 }

@@ -9,7 +9,6 @@ export class Sprite {
   name: string;
   materialName: string;
   private buffer!: GLBuffer;
-  position = new Vector3();
   material: Material;
 
   constructor(
@@ -64,13 +63,13 @@ export class Sprite {
   }
   update(time: number) {}
 
-  draw(shader: Shader) {
-    let model = shader.getUnifomrLocation('u_model');
-    gl.uniformMatrix4fv(
-      model,
-      false,
-      new Float32Array(Matrix4x4.translation(this.position).data)
-    );
+  draw(shader: Shader, model: Matrix4x4) {
+    
+    let v = Matrix4x4.translation(new Vector3()).data;
+  
+
+    let modelLocation = shader.getUnifomrLocation('u_model');
+    gl.uniformMatrix4fv(modelLocation, false, model.toFloat32Array());
 
     let color = shader.getUnifomrLocation('u_tint');
     gl.uniform4fv(color, this.material.tint.toFloat32Array());

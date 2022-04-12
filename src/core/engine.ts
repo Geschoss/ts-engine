@@ -5,14 +5,13 @@ import { BasicShader } from './gl/shaders/basicShader';
 import { Color } from './graphics/color';
 import { Material } from './graphics/material';
 import { MaterialManager } from './graphics/materialManager';
-import { Sprite } from './graphics/sprite';
 import { Matrix4x4 } from './math/matrix4x4';
 import { MessageBus } from './message/bus';
+import { ZoneManager } from './world/zoneManager';
 
 export class Engine {
   private canvas!: HTMLCanvasElement;
   private basicShader!: BasicShader;
-  private sprite!: Sprite;
   private projection!: Matrix4x4;
 
   constructor() {}
@@ -30,7 +29,14 @@ export class Engine {
       new Material(
         'crate',
         'assets/textures/crate.jpeg',
-        new Color(0, 128, 0, 255)
+        Color.white()
+      )
+    );
+    MaterialManager.register(
+      new Material(
+        'wood',
+        'assets/textures/wood.jpeg',
+        Color.white()
       )
     );
 
@@ -43,18 +49,20 @@ export class Engine {
       100
     );
 
-    this.sprite = new Sprite('test', 'crate', 100, 100);
-    this.sprite.load();
-    this.sprite.position.x = 100;
-    this.sprite.position.y = 100;
-
+    let zoneID = ZoneManager.createTestZone();
+    ZoneManager.changeZone(zoneID);
+    
     this.resize();
     this.loop();
   }
 
   loop() {
     MessageBus.update(0);
+    ZoneManager.update(0);
+
     gl.clear(gl.COLOR_BUFFER_BIT);
+
+    ZoneManager.render(this.basicShader);
 
     let projection = this.basicShader.getUnifomrLocation('u_projection');
     gl.uniformMatrix4fv(
@@ -62,8 +70,6 @@ export class Engine {
       false,
       new Float32Array(this.projection.data)
     );
-
-    this.sprite.draw(this.basicShader);
 
     requestAnimationFrame(this.loop.bind(this));
   }

@@ -50,15 +50,58 @@ export class Matrix4x4 {
     m.data[14] = position.z;
     return m;
   }
-  static rotationZ(angleInRadians: number) {
+  public static rotationX(angleInRadians: number): Matrix4x4 {
+    let m = new Matrix4x4();
+
+    let c = Math.cos(angleInRadians);
+    let s = Math.sin(angleInRadians);
+
+    m.data[5] = c;
+    m.data[6] = s;
+    m.data[9] = -s;
+    m.data[10] = c;
+
+    return m;
+  }
+
+  /**
+   * Creates a rotation matrix on the Y axis from the provided angle in radians.
+   * @param angleInRadians The angle in radians.
+   */
+  public static rotationY(angleInRadians: number): Matrix4x4 {
+    let m = new Matrix4x4();
+
+    let c = Math.cos(angleInRadians);
+    let s = Math.sin(angleInRadians);
+
+    m.data[0] = c;
+    m.data[2] = -s;
+    m.data[8] = s;
+    m.data[10] = c;
+
+    return m;
+  }
+  public static rotationZ(angleInRadians: number): Matrix4x4 {
     let m = new Matrix4x4();
     let c = Math.cos(angleInRadians);
-    let s = Math.sign(angleInRadians);
+    let s = Math.sin(angleInRadians);
     m.data[0] = c;
     m.data[1] = s;
-    m.data[5] = -s;
-    m.data[6] = -c;
+    m.data[4] = -s;
+    m.data[5] = c;
     return m;
+  }
+  public static rotationXYZ(
+    xRadians: number,
+    yRadians: number,
+    zRadians: number
+  ): Matrix4x4 {
+    let rx = Matrix4x4.rotationX(xRadians);
+    let ry = Matrix4x4.rotationY(yRadians);
+    let rz = Matrix4x4.rotationZ(zRadians);
+
+    // ZYX
+    return Matrix4x4.multiply(Matrix4x4.multiply(rz, ry), rx);
   }
 
   static multiply(a: Matrix4x4, b: Matrix4x4) {
@@ -129,5 +172,11 @@ export class Matrix4x4 {
 
   toFloat32Array() {
     return new Float32Array(this.data);
+  }
+
+  copyFrom(matrix: Matrix4x4) {
+    for (let i = 0; i < 16; ++i) {
+      this.data[i] = matrix.data[i];
+    }
   }
 }
