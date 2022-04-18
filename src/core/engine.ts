@@ -18,7 +18,9 @@ export class Engine {
 
   start(elementId: string) {
     this.canvas = GLUtilities.initialize(elementId);
-    AssetManager.register(new ImageLoader());
+    ZoneManager.initialize();
+    AssetManager.initialize();
+
     gl.clearColor(0, 0, 0, 1);
 
     this.basicShader = new BasicShader();
@@ -49,8 +51,8 @@ export class Engine {
       100
     );
 
-    let zoneID = ZoneManager.createTestZone();
-    ZoneManager.changeZone(zoneID);
+    // TODO: Change this to be read from a game confg
+    ZoneManager.changeZone(0);
     
     this.resize();
     this.loop();

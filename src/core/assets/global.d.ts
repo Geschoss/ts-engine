@@ -1,4 +1,4 @@
-declare interface IAsset<D> {
+declare interface IAsset<D = any> {
   readonly name: string;
   readonly data: D;
 }

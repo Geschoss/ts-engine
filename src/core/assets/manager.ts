@@ -1,4 +1,6 @@
 import { MessageBus } from '../message/bus';
+import { ImageLoader } from './imageLoader';
+import { JsonLoader } from './jsonLoader';
 
 export const MESSAGE_ASSET_LOADER_ASSET_LOADED =
   'MESSAGE_ASSET_LOADER_ASSET_LOADED::';
@@ -16,6 +18,10 @@ export const AssetManager = managerSDK({
 function managerSDK({ loaders, loadedAssets }: ManagerConf) {
   const isLoaded = (assetName: string) => loadedAssets.has(assetName);
   const register = (loader: IAssetLoader) => loaders.push(loader);
+  const initialize = () => {
+    AssetManager.register(new ImageLoader());
+    AssetManager.register(new JsonLoader());
+  };
 
   const load = (assetName: string) => {
     let extension = assetName.split('.').pop()?.toLocaleLowerCase();
@@ -51,5 +57,7 @@ function managerSDK({ loaders, loadedAssets }: ManagerConf) {
     load,
     register,
     onLoaded,
+    isLoaded,
+    initialize,
   };
 }

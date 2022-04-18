@@ -61,7 +61,7 @@ export class GLBuffer {
       gl.disableVertexAttribArray(attr.location);
     }
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    gl.bindBuffer(this.targetBufferType, null);
   }
 
   addAtributeLocation(info: AttributeInfo) {

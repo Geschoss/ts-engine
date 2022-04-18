@@ -24,4 +24,16 @@ export class Transform {
     // T * R * S
     return Matrix4x4.multiply(Matrix4x4.multiply(translation, rotation), scale);
   }
+
+  setFromJson(json: TransformJson) {
+    if (json.position !== undefined) {
+      this.position.setFromJson(json.position);
+    }
+    if (json.rotation !== undefined) {
+      this.rotation.setFromJson(json.rotation);
+    }
+    if (json.scale !== undefined) {
+      this.scale.setFromJson(json.scale);
+    }
+  }
 }

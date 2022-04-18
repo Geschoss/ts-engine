@@ -30,4 +30,16 @@ export class Vector3 {
   static one() {
     return new Vector3(1, 1, 1);
   }
+
+  setFromJson(json: any) {
+    if (json.x !== undefined) {
+      this.x = Number(json.x);
+    }
+    if (json.y !== undefined) {
+      this.y = Number(json.y);
+    }
+    if (json.z !== undefined) {
+      this.z = Number(json.z);
+    }
+  }
 }
