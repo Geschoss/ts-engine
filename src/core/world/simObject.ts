@@ -1,4 +1,3 @@
-import { BaseComponent } from '../components/baseComponent';
 import { Shader } from '../gl/shaders/shader';
 import { Matrix4x4 } from '../math/matrix4x4';
 import { Transform } from '../math/transform';
@@ -9,7 +8,7 @@ export class SimObject {
   readonly name: string;
   loaded: boolean = false;
   children: SimObject[] = [];
-  components: BaseComponent[] = [];
+  components: IComponent[] = [];
 
   scene: Scene;
   parent?: SimObject;
@@ -49,7 +48,7 @@ export class SimObject {
     }
     return undefined;
   }
-  addComponent(component: BaseComponent) {
+  addComponent(component: IComponent) {
     this.components.push(component);
     component.setOwner(this);
   }
@@ -92,7 +91,6 @@ export class SimObject {
       );
     } else {
       this.worldMatrix.copyFrom(this.localMatrix);
-      let v = this.worldMatrix;
     }
   }
 }

@@ -16,10 +16,24 @@
           "name": "testObject",
           "transform": {
             "position": {
-              "x": 120,
-              "y": 120
+              "x": 50,
+              "y": 50
             }
-          }
+          },
+          "components": [
+            {
+              "name": "test",
+              "type": "sprite",
+              "materialName": "crate"
+            }
+          ]
+        }
+      ],
+      "components": [
+        {
+          "name": "test",
+          "type": "sprite",
+          "materialName": "wood"
         }
       ]
     }

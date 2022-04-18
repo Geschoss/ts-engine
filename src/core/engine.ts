@@ -1,5 +1,6 @@
-import { ImageLoader } from './assets/imageLoader';
 import { AssetManager } from './assets/manager';
+import { ComponentManager } from './components/manager';
+import { SpriteComponentBuilder } from './components/sprite';
 import { GLUtilities } from './gl/gl';
 import { BasicShader } from './gl/shaders/basicShader';
 import { Color } from './graphics/color';
@@ -20,8 +21,7 @@ export class Engine {
     this.canvas = GLUtilities.initialize(elementId);
     ZoneManager.initialize();
     AssetManager.initialize();
-
-    gl.clearColor(0, 0, 0, 1);
+    ComponentManager.registerBuilder(new SpriteComponentBuilder())
 
     this.basicShader = new BasicShader();
     this.basicShader.use();
@@ -54,6 +54,7 @@ export class Engine {
     // TODO: Change this to be read from a game confg
     ZoneManager.changeZone(0);
     
+    gl.clearColor(0, 0, 0, 1);
     this.resize();
     this.loop();
   }

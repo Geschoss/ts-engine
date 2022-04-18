@@ -1,11 +1,20 @@
+import { isDefined } from '../../lib/ramda';
+import { ComponentManager } from '../components/manager';
 import { Shader } from '../gl/shaders/shader';
 import { Scene } from './scene';
 import { SimObject } from './simObject';
 
+// TODO убрать
+type ComponentsJson = Partial<{
+  name: string;
+  type: string;
+  materialName: string;
+}>;
 type SibObject = Partial<{
   name?: string;
   transform?: TransformJson;
   children?: SibObject[];
+  components?: ComponentsJson[];
 }>;
 type ZoneData = {
   objects?: SibObject[];
@@ -59,25 +68,33 @@ export class Zone {
 
   private loadSimObject(dataSections: SibObject, parent: SimObject) {
     let name = dataSections.name;
-    if (name === undefined) {
+    if (!isDefined(name)) {
       name = '';
       console.warn(`Zone has not name.`);
     }
     let simObject = new SimObject(this.globalID++, name, this.scene);
 
     let transform = dataSections.transform;
-    if (transform !== undefined) {
+    if (isDefined(transform)) {
       simObject.transform.setFromJson(transform);
     }
 
+    let components = dataSections.components;
+    if (isDefined(components)) {
+      for (let componentData of components) {
+        let component = ComponentManager.extractComponent(componentData);
+        simObject.addComponent(component);
+      }
+    }
+
     let children = dataSections.children;
-    if (children !== undefined) {
+    if (isDefined(children)) {
       for (let object of children) {
         this.loadSimObject(object, simObject);
       }
     }
 
-    if (parent !== undefined) {
+    if (isDefined(parent)) {
       parent.addChild(simObject);
     }
   }
