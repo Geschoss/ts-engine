@@ -24,7 +24,6 @@ export class JsonLoader implements IAssetLoader {
   }
 
   private onJsonLoaded(assetName: string, request: XMLHttpRequest) {
-    console.log('onJsonLoaded: assetName/request', assetName, request);
     if (request.readyState === request.DONE) {
       let json = JSON.parse(request.responseText);
       let asset = new JsonAsset(assetName, json);

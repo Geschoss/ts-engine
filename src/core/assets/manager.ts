@@ -18,6 +18,7 @@ export const AssetManager = managerSDK({
 function managerSDK({ loaders, loadedAssets }: ManagerConf) {
   const isLoaded = (assetName: string) => loadedAssets.has(assetName);
   const register = (loader: IAssetLoader) => loaders.push(loader);
+
   const initialize = () => {
     AssetManager.register(new ImageLoader());
     AssetManager.register(new JsonLoader());

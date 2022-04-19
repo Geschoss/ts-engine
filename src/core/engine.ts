@@ -1,6 +1,5 @@
 import { AssetManager } from './assets/manager';
 import { ComponentManager } from './components/manager';
-import { SpriteComponentBuilder } from './components/sprite';
 import { GLUtilities } from './gl/gl';
 import { BasicShader } from './gl/shaders/basicShader';
 import { Color } from './graphics/color';
@@ -21,25 +20,17 @@ export class Engine {
     this.canvas = GLUtilities.initialize(elementId);
     ZoneManager.initialize();
     AssetManager.initialize();
-    ComponentManager.registerBuilder(new SpriteComponentBuilder())
+    ComponentManager.iinitialize();
 
     this.basicShader = new BasicShader();
     this.basicShader.use();
 
     // Load materials
     MaterialManager.register(
-      new Material(
-        'crate',
-        'assets/textures/crate.jpeg',
-        Color.white()
-      )
+      new Material('crate', 'assets/textures/crate.jpeg', Color.white())
     );
     MaterialManager.register(
-      new Material(
-        'wood',
-        'assets/textures/wood.jpeg',
-        Color.white()
-      )
+      new Material('wood', 'assets/textures/wood.jpeg', Color.white())
     );
 
     this.projection = Matrix4x4.orthographic(
@@ -53,7 +44,7 @@ export class Engine {
 
     // TODO: Change this to be read from a game confg
     ZoneManager.changeZone(0);
-    
+
     gl.clearColor(0, 0, 0, 1);
     this.resize();
     this.loop();

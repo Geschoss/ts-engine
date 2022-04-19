@@ -4,21 +4,6 @@ import { Shader } from '../gl/shaders/shader';
 import { Scene } from './scene';
 import { SimObject } from './simObject';
 
-// TODO убрать
-type ComponentsJson = Partial<{
-  name: string;
-  type: string;
-  materialName: string;
-}>;
-type SibObject = Partial<{
-  name?: string;
-  transform?: TransformJson;
-  children?: SibObject[];
-  components?: ComponentsJson[];
-}>;
-type ZoneData = {
-  objects?: SibObject[];
-};
 export type ZoneState = 'UNINITIALIZED' | 'LOADING' | 'UPDATING';
 export class Zone {
   id: number;
@@ -35,7 +20,7 @@ export class Zone {
     this.scene = new Scene();
     this.state = 'UNINITIALIZED';
   }
-  initialize(fileData: ZoneData) {
+  initialize(fileData: IZoneData) {
     let objects = fileData.objects;
     if (objects === undefined) {
       throw new Error(`Zone initialization error: objects not present.`);
@@ -66,7 +51,7 @@ export class Zone {
   onActivated() {}
   onDeactivated() {}
 
-  private loadSimObject(dataSections: SibObject, parent: SimObject) {
+  private loadSimObject(dataSections: ISimObjectJson, parent: SimObject) {
     let name = dataSections.name;
     if (!isDefined(name)) {
       name = '';
