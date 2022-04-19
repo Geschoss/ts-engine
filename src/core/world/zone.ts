@@ -1,4 +1,5 @@
 import { isDefined } from '../../lib/ramda';
+import { BehaviorManager } from '../behaviors/manager';
 import { ComponentManager } from '../components/manager';
 import { Shader } from '../gl/shaders/shader';
 import { Scene } from './scene';
@@ -69,6 +70,14 @@ export class Zone {
       for (let componentData of components) {
         let component = ComponentManager.extractComponent(componentData);
         simObject.addComponent(component);
+      }
+    }
+
+    let behaviors = dataSections.behaviors;
+    if (isDefined(behaviors)) {
+      for (let behaviorData of behaviors) {
+        let behavior = BehaviorManager.extractBehavior(behaviorData);
+        simObject.addBehavior(behavior);
       }
     }
 

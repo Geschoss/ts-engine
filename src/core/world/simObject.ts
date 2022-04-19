@@ -9,7 +9,7 @@ export class SimObject {
   loaded: boolean = false;
   children: SimObject[] = [];
   components: IComponent[] = [];
-
+  behaviors: IBehavior[] = [];
   scene: Scene;
   parent?: SimObject;
 
@@ -52,6 +52,10 @@ export class SimObject {
     this.components.push(component);
     component.setOwner(this);
   }
+  addBehavior(behavior: IBehavior) {
+    this.behaviors.push(behavior);
+    behavior.setOwner(this);
+  }
   load() {
     this.loaded = true;
     for (let comp of this.components) {
@@ -66,6 +70,9 @@ export class SimObject {
     this.updateWorldMatrix();
     for (let comp of this.components) {
       comp.update(time);
+    }
+    for (let behavior of this.behaviors) {
+      behavior.update(time);
     }
     for (let child of this.children) {
       child.update(time);

@@ -1,4 +1,5 @@
 import { AssetManager } from './assets/manager';
+import { BehaviorManager } from './behaviors/manager';
 import { ComponentManager } from './components/manager';
 import { GLUtilities } from './gl/gl';
 import { BasicShader } from './gl/shaders/basicShader';
@@ -21,6 +22,7 @@ export class Engine {
     ZoneManager.initialize();
     AssetManager.initialize();
     ComponentManager.iinitialize();
+    BehaviorManager.iinitialize();
 
     this.basicShader = new BasicShader();
     this.basicShader.use();

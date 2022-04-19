@@ -42,4 +42,29 @@ export class Vector3 {
       this.z = Number(json.z);
     }
   }
+
+  add(v: Vector3): Vector3 {
+    this.x += v.x;
+    this.y += v.y;
+    this.z += v.z;
+    return this;
+  }
+  substract(v: Vector3): Vector3 {
+    this.x -= v.x;
+    this.y -= v.y;
+    this.z -= v.z;
+    return this;
+  }
+  multiply(v: Vector3): Vector3 {
+    this.x *= v.x;
+    this.y *= v.y;
+    this.z *= v.z;
+    return this;
+  }
+  divide(v: Vector3): Vector3 {
+    this.x /= v.x;
+    this.y /= v.y;
+    this.z /= v.z;
+    return this;
+  }
 }
