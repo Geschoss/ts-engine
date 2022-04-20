@@ -1,14 +1,16 @@
+import { isDefined } from '../../lib/ramda';
+
 type AttributeInfo = {
-  location: number;
   size: number;
   offset: number;
+  location: number;
 };
 
 export class GLBuffer {
   private hasAttributeLocation = false;
   private elementSize: number;
-  private stribe: number;
-  private buffer: WebGLBuffer;
+  private stribe!: number;
+  private buffer!: WebGLBuffer;
 
   private targetBufferType: number;
   private dataType: number;
@@ -19,19 +21,20 @@ export class GLBuffer {
   private attributes: AttributeInfo[] = [];
 
   constructor(
-    elementSize: number,
     dataType: number = gl.FLOAT,
     targetBufferType: number = gl.ARRAY_BUFFER,
     mode: number = gl.TRIANGLES
   ) {
-    this.elementSize = elementSize;
-    this.dataType = dataType;
-    this.targetBufferType = targetBufferType;
+    const buffer = gl.createBuffer();
+    if (!isDefined(buffer)) {
+      throw new Error('Cannot create gl buffer!');
+    }
+    this.buffer = buffer;
     this.mode = mode;
+    this.dataType = dataType;
     this.typeSize = typeByDataType(this.dataType);
-    this.stribe = this.elementSize * this.typeSize;
-    // @ts-ignore
-    this.buffer = gl.createBuffer();
+    this.elementSize = 0;
+    this.targetBufferType = targetBufferType;
   }
 
   destroy() {
@@ -64,13 +67,33 @@ export class GLBuffer {
     gl.bindBuffer(this.targetBufferType, null);
   }
 
-  addAtributeLocation(info: AttributeInfo) {
+  addAtributeLocation({
+    size,
+    location,
+  }: Pick<AttributeInfo, 'size' | 'location'>) {
     this.hasAttributeLocation = true;
-    this.attributes.push(info);
+    this.attributes.push({
+      size,
+      location,
+      offset: this.elementSize,
+    });
+    this.elementSize += size;
+    this.stribe = this.elementSize * this.typeSize;
+  }
+
+  setData(data: number[]) {
+    this.clearData();
+    this.pushBackData(data);
   }
 
   pushBackData(data: number[]) {
-    this.data.push(...data);
+    for (let d of data) {
+      this.data.push(d);
+    }
+  }
+
+  clearData() {
+    this.data.length = 0;
   }
 
   upload() {

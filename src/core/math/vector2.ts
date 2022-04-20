@@ -14,9 +14,12 @@ export class Vector2 {
   toFloat32Array() {
     return new Float32Array(this.toArray());
   }
-  
+
   static one() {
     return new Vector2(1, 1);
+  }
+  static zero() {
+    return new Vector2();
   }
 
   setFromJson(json: any) {
@@ -26,5 +29,10 @@ export class Vector2 {
     if (json.y !== undefined) {
       this.y = Number(json.y);
     }
+  }
+
+  copyFrom(v: Vector2) {
+    this.x = v.x;
+    this.y = v.y;
   }
 }

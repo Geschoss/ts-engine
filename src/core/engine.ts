@@ -14,6 +14,7 @@ export class Engine {
   private canvas!: HTMLCanvasElement;
   private basicShader!: BasicShader;
   private projection!: Matrix4x4;
+  private previosTime = 0;
 
   constructor() {}
 
@@ -35,6 +36,10 @@ export class Engine {
       new Material('wood', 'assets/textures/wood.jpeg', Color.white())
     );
 
+    MaterialManager.register(
+      new Material('duck', 'assets/textures/duck.png', Color.white())
+    );
+
     this.projection = Matrix4x4.orthographic(
       0,
       this.canvas.width,
@@ -47,15 +52,28 @@ export class Engine {
     // TODO: Change this to be read from a game confg
     ZoneManager.changeZone(0);
 
-    gl.clearColor(0, 0, 0, 1);
+    gl.clearColor(0, 0, 0.3, 1);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
     this.resize();
     this.loop();
   }
 
   loop() {
-    MessageBus.update(0);
-    ZoneManager.update(0);
+    this.update();
+    this.render();
+  }
 
+  update() {
+    let delta = performance.now() - this.previosTime;
+    MessageBus.update(delta);
+    ZoneManager.update(delta);
+
+    this.previosTime = performance.now();
+  }
+
+  render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     ZoneManager.render(this.basicShader);

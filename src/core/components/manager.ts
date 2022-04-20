@@ -1,9 +1,10 @@
 import { isDefined } from '../../lib/ramda';
+import { AnimatedSpriteComponentBuilder } from './animatedSprite';
 import { SpriteComponentBuilder } from './sprite';
 
 export class ComponentManager {
   private static registeredBuilders: Record<string, IComponentBuilder> = {};
-  
+
   static registerBuilder(builder: IComponentBuilder) {
     ComponentManager.registeredBuilders[builder.type] = builder;
   }
@@ -20,5 +21,6 @@ export class ComponentManager {
   }
   static iinitialize() {
     ComponentManager.registerBuilder(new SpriteComponentBuilder());
+    ComponentManager.registerBuilder(new AnimatedSpriteComponentBuilder());
   }
 }
