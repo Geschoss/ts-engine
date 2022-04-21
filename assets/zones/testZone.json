@@ -25,6 +25,13 @@
           "frameCount": 3,
           "frameSequence": [0, 1, 2]
         }
+      ],
+      "behaviors": [
+        {
+          "name": "duck-move",
+          "type": "keyboard",
+          "speed": 2
+        }
       ]
     },
     {

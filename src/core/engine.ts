@@ -6,6 +6,11 @@ import { BasicShader } from './gl/shaders/basicShader';
 import { Color } from './graphics/color';
 import { Material } from './graphics/material';
 import { MaterialManager } from './graphics/materialManager';
+import {
+  InputManager,
+  MOUSE_DOWN_EVENT,
+  MOUSE_UP_EVENT,
+} from './input/manager';
 import { Matrix4x4 } from './math/matrix4x4';
 import { MessageBus } from './message/bus';
 import { ZoneManager } from './world/zoneManager';
@@ -20,10 +25,14 @@ export class Engine {
 
   start(elementId: string) {
     this.canvas = GLUtilities.initialize(elementId);
-    ZoneManager.initialize();
+    InputManager.initialize();
     AssetManager.initialize();
+    ZoneManager.initialize();
     ComponentManager.iinitialize();
     BehaviorManager.iinitialize();
+
+    MessageBus.subscribe(MOUSE_UP_EVENT, this.onMessage.bind(this));
+    MessageBus.subscribe(MOUSE_DOWN_EVENT, this.onMessage.bind(this));
 
     this.basicShader = new BasicShader();
     this.basicShader.use();
@@ -103,5 +112,9 @@ export class Engine {
     );
 
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  onMessage(message: IMessage) {
+    console.log({ message });
   }
 }
