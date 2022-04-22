@@ -19,7 +19,7 @@ export class Publisher implements IPublisher {
     this.queueMessagePerUpdate = queueMessagePerUpdate;
   }
 
-  private notify(message: IMessage) {
+  private notify<E extends string>(message: IMessage<E>) {
     let handlers = this.subscriptions.get(message.code);
     if (!handlers) {
       console.warn(`Cannot find handlers for ${message.code}`);
@@ -30,7 +30,7 @@ export class Publisher implements IPublisher {
     }
   }
 
-  private post(message: IMessage) {
+  private post<E extends string>(message: IMessage<E>) {
     console.log('Message posted:', message);
     if (message.priority === 'HIGH') {
       this.notify(message);
@@ -39,13 +39,13 @@ export class Publisher implements IPublisher {
     }
   }
 
-  send(code: string, context?: any) {
+  send<E extends string>(code: E, context?: any) {
     this.post({ code, context, priority: 'NORMAL' });
   }
   sendPiority(code: string, context?: any) {
     this.post({ code, context, priority: 'HIGH' });
   }
-  subscribe(code: string, handler: IMessageHandler) {
+  subscribe<E extends string>(code: E, handler: IMessageHandler) {
     let handlers = this.subscriptions.get(code);
     if (!handlers) {
       handlers = [];
@@ -57,7 +57,7 @@ export class Publisher implements IPublisher {
       handlers.push(handler);
     }
   }
-  unsubscribe(code: string, handler: IMessageHandler) {
+  unsubscribe<E extends string>(code: E, handler: IMessageHandler) {
     let handlers = this.subscriptions.get(code);
     if (!handlers) {
       console.warn(

@@ -1,8 +1,7 @@
 import { Vector2 } from '../math/vector2';
 import { MessageBus } from '../message/bus';
 
-export const MOUSE_UP_EVENT = 'MOUSE_UP_EVENT';
-export const MOUSE_DOWN_EVENT = 'MOUSE_DOWN_EVENT';
+export type MouseEvents = 'MOUSE_UP_EVENT' | 'MOUSE_DOWN_EVENT';
 export enum Keys {
   LEFT = 37,
   UP = 38,
@@ -60,7 +59,7 @@ export class InputManager {
     } else if (event.button === 2) {
       rightDown = true;
     }
-    MessageBus.send(MOUSE_DOWN_EVENT, {
+    MessageBus.send<MouseEvents>('MOUSE_DOWN_EVENT', {
       leftDown,
       rightDown,
       position: InputManager.getMousePosition(),
@@ -73,7 +72,7 @@ export class InputManager {
       rightDown = false;
     }
 
-    MessageBus.send(MOUSE_UP_EVENT, {
+    MessageBus.send<MouseEvents>('MOUSE_UP_EVENT', {
       leftDown,
       rightDown,
       position: InputManager.getMousePosition(),

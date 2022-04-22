@@ -1,4 +1,5 @@
 import { AssetManager } from './assets/manager';
+import { AudioManager } from './audio/manager';
 import { BehaviorManager } from './behaviors/manager';
 import { ComponentManager } from './components/manager';
 import { GLUtilities } from './gl/gl';
@@ -6,11 +7,7 @@ import { BasicShader } from './gl/shaders/basicShader';
 import { Color } from './graphics/color';
 import { Material } from './graphics/material';
 import { MaterialManager } from './graphics/materialManager';
-import {
-  InputManager,
-  MOUSE_DOWN_EVENT,
-  MOUSE_UP_EVENT,
-} from './input/manager';
+import { InputManager, MouseEvents } from './input/manager';
 import { Matrix4x4 } from './math/matrix4x4';
 import { MessageBus } from './message/bus';
 import { ZoneManager } from './world/zoneManager';
@@ -31,8 +28,16 @@ export class Engine {
     ComponentManager.iinitialize();
     BehaviorManager.iinitialize();
 
-    MessageBus.subscribe(MOUSE_UP_EVENT, this.onMessage.bind(this));
-    MessageBus.subscribe(MOUSE_DOWN_EVENT, this.onMessage.bind(this));
+    MessageBus.subscribe<MouseEvents>(
+      'MOUSE_UP_EVENT',
+      this.onMessage.bind(this)
+    );
+    MessageBus.subscribe<MouseEvents>(
+      'MOUSE_DOWN_EVENT',
+      this.onMessage.bind(this)
+    );
+
+    AudioManager.loadSoundFile('flap', 'assets/sounds/flap.mp3');
 
     this.basicShader = new BasicShader();
     this.basicShader.use();
@@ -114,7 +119,9 @@ export class Engine {
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  onMessage(message: IMessage) {
-    console.log({ message });
+  onMessage(message: IMessage<MouseEvents>) {
+    if (message.code === 'MOUSE_DOWN_EVENT') {
+      AudioManager.playSound('flap');
+    }
   }
 }

@@ -30,7 +30,7 @@
         {
           "name": "duck-move",
           "type": "keyboard",
-          "speed": 2
+          "speed": 4
         }
       ]
     },
