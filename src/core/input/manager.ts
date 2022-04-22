@@ -59,7 +59,7 @@ export class InputManager {
     } else if (event.button === 2) {
       rightDown = true;
     }
-    MessageBus.send<MouseEvents>('MOUSE_DOWN_EVENT', {
+    MessageBus.send('MOUSE_DOWN_EVENT', {
       leftDown,
       rightDown,
       position: InputManager.getMousePosition(),
@@ -72,7 +72,7 @@ export class InputManager {
       rightDown = false;
     }
 
-    MessageBus.send<MouseEvents>('MOUSE_UP_EVENT', {
+    MessageBus.send('MOUSE_UP_EVENT', {
       leftDown,
       rightDown,
       position: InputManager.getMousePosition(),

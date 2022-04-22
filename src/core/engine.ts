@@ -28,14 +28,8 @@ export class Engine {
     ComponentManager.iinitialize();
     BehaviorManager.iinitialize();
 
-    MessageBus.subscribe<MouseEvents>(
-      'MOUSE_UP_EVENT',
-      this.onMessage.bind(this)
-    );
-    MessageBus.subscribe<MouseEvents>(
-      'MOUSE_DOWN_EVENT',
-      this.onMessage.bind(this)
-    );
+    MessageBus.subscribe('MOUSE_UP_EVENT', this.onMessage.bind(this));
+    MessageBus.subscribe('MOUSE_DOWN_EVENT', this.onMessage.bind(this));
 
     AudioManager.loadSoundFile('flap', 'assets/sounds/flap.mp3');
 
@@ -119,7 +113,7 @@ export class Engine {
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  onMessage(message: IMessage<MouseEvents>) {
+  onMessage(message: IMessage) {
     if (message.code === 'MOUSE_DOWN_EVENT') {
       AudioManager.playSound('flap');
     }

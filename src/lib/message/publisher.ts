@@ -1,3 +1,5 @@
+import { isDefined } from '../ramda';
+
 type PublisherConf = {
   subscriptions: Map<string, IMessageHandler[]>;
   messageQueue?: IMessage[];
@@ -19,7 +21,7 @@ export class Publisher implements IPublisher {
     this.queueMessagePerUpdate = queueMessagePerUpdate;
   }
 
-  private notify<E extends string>(message: IMessage<E>) {
+  private notify(message: IMessage) {
     let handlers = this.subscriptions.get(message.code);
     if (!handlers) {
       console.warn(`Cannot find handlers for ${message.code}`);
@@ -30,7 +32,7 @@ export class Publisher implements IPublisher {
     }
   }
 
-  private post<E extends string>(message: IMessage<E>) {
+  private post(message: IMessage) {
     console.log('Message posted:', message);
     if (message.priority === 'HIGH') {
       this.notify(message);
@@ -39,15 +41,15 @@ export class Publisher implements IPublisher {
     }
   }
 
-  send<E extends string>(code: E, context?: any) {
+  send(code: string, context?: any) {
     this.post({ code, context, priority: 'NORMAL' });
   }
   sendPiority(code: string, context?: any) {
     this.post({ code, context, priority: 'HIGH' });
   }
-  subscribe<E extends string>(code: E, handler: IMessageHandler) {
+  subscribe(code: string, handler: IMessageHandler) {
     let handlers = this.subscriptions.get(code);
-    if (!handlers) {
+    if (!isDefined(handlers)) {
       handlers = [];
       this.subscriptions.set(code, handlers);
     }
@@ -57,7 +59,7 @@ export class Publisher implements IPublisher {
       handlers.push(handler);
     }
   }
-  unsubscribe<E extends string>(code: E, handler: IMessageHandler) {
+  unsubscribe(code: string, handler: IMessageHandler) {
     let handlers = this.subscriptions.get(code);
     if (!handlers) {
       console.warn(
