@@ -1,3 +1,5 @@
+import { isDefined } from '../../lib/ramda';
+
 export class Vector3 {
   x: number;
   y: number;
@@ -7,6 +9,15 @@ export class Vector3 {
     this.x = x;
     this.y = y;
     this.z = z;
+  }
+
+  static distance(a: Vector3, b: Vector3): number {
+    let diff = a.substract(b);
+    return Math.sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+  }
+
+  equals(v: Vector3) {
+    return this.x === v.x && this.y === v.y && this.z === v.z;
   }
 
   toArray() {
@@ -31,6 +42,17 @@ export class Vector3 {
     return new Vector3(1, 1, 1);
   }
 
+  set(x?: number, y?: number, z?: number) {
+    if (isDefined(x)) {
+      this.x = x;
+    }
+    if (isDefined(y)) {
+      this.y = y;
+    }
+    if (isDefined(z)) {
+      this.z = z;
+    }
+  }
   setFromJson(json: any) {
     if (json.x !== undefined) {
       this.x = Number(json.x);

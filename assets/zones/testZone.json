@@ -24,6 +24,14 @@
           "frameHeight": 12,
           "frameCount": 3,
           "frameSequence": [0, 1, 2]
+        },
+        {
+          "name": "duckCollision",
+          "type": "collision",
+          "shape": {
+            "type": "circle",
+            "radius": 68
+          }
         }
       ],
       "behaviors": [
@@ -47,15 +55,19 @@
           "name": "testObject",
           "transform": {
             "position": {
-              "x": 50,
-              "y": 50
+              "x": 150,
+              "y": 150
             }
           },
           "components": [
             {
               "name": "test",
               "type": "sprite",
-              "materialName": "crate"
+              "materialName": "crate",
+              "origin": {
+                "x": 0.5,
+                "y": 0.5
+              }
             }
           ],
           "behaviors": [
@@ -63,7 +75,7 @@
               "name": "rotateX",
               "type": "rotation",
               "rotation": {
-                "z": -0.03
+                "z": -0.05
               }
             }
           ]
@@ -73,7 +85,11 @@
         {
           "name": "test",
           "type": "sprite",
-          "materialName": "wood"
+          "materialName": "wood",
+          "origin": {
+            "x": 0.5,
+            "y": 0.5
+          }
         }
       ],
       "behaviors": [

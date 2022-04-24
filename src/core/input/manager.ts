@@ -33,15 +33,17 @@ export class InputManager {
   }
   static onKeyDown(event: KeyboardEvent) {
     _keys[event.keyCode] = true;
-    event.preventDefault();
-    event.stopPropagation();
-    return false;
+    // event.preventDefault();
+    // event.stopPropagation();
+    // return false;
+    return true;
   }
   static onKeyUp(event: KeyboardEvent) {
     _keys[event.keyCode] = false;
-    event.preventDefault();
-    event.stopPropagation();
-    return false;
+    // event.preventDefault();
+    // event.stopPropagation();
+    // return false;
+    return true;
   }
   static getMousePosition(): Vector2 {
     return new Vector2(mouseX, mouseY);

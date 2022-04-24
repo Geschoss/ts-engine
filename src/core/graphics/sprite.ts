@@ -1,11 +1,14 @@
 import { GLBuffer } from '../gl/glBuffer';
 import { Shader } from '../gl/shaders/shader';
 import { Matrix4x4 } from '../math/matrix4x4';
+import { Vector3 } from '../math/vector3';
 import { Material } from './material';
 import { MaterialManager } from './materialManager';
 import { Vertex } from './vertex';
 
 export class Sprite {
+  readonly origin = Vector3.zero();
+
   name: string;
   materialName: string;
   material: Material;
@@ -28,6 +31,12 @@ export class Sprite {
     this.material = MaterialManager.get(this.materialName);
   }
 
+  setOrigin(value: Vector3) {
+    // @ts-ignore
+    this.origin = value;
+    this.recalculateVertices();
+  }
+
   destroy() {
     this.buffer.destroy();
     MaterialManager.release(this.materialName);
@@ -48,23 +57,7 @@ export class Sprite {
       size: 2,
     });
 
-    // prettier-ignore
-    this.vertices = [
-      // x, y, z,      u, v
-      new Vertex(0, 0, 0, 0, 0),
-      new Vertex(0, this.height, 0, 0, 1.0),
-      new Vertex(this.width, this.height, 0, 1.0, 1.0),
-
-      new Vertex(this.width, this.height, 0.0, 1.0, 1.0),
-      new Vertex(this.width, 0.0, 0.0, 1.0, 0),
-      new Vertex(0.0, 0.0, 0.0, 0, 0)
-    ];
-
-    for (let v of this.vertices) {
-      this.buffer.pushBackData(v.toArray());
-    }
-    this.buffer.upload();
-    this.buffer.unbind();
+    this.calculateVertices();
   }
   update(_: number) {}
 
@@ -83,5 +76,49 @@ export class Sprite {
 
     this.buffer.bind();
     this.buffer.draw();
+  }
+
+  protected calculateVertices() {
+    let minX = -(this.width * this.origin.x);
+    let maxX = this.width * (1.0 - this.origin.x);
+
+    let minY = -(this.height * this.origin.y);
+    let maxY = this.height * (1.0 - this.origin.y);
+
+    // prettier-ignore
+    this.vertices = [
+      // x, y, z,      u, v
+      new Vertex(minX, minY, 0, 0, 0),
+      new Vertex(minX, maxY, 0, 0, 1.0),
+      new Vertex(maxX, maxY, 0, 1.0, 1.0),
+
+      new Vertex(maxX, maxY, 0.0, 1.0, 1.0),
+      new Vertex(maxX, minY, 0.0, 1.0, 0),
+      new Vertex(minX, minY, 0.0, 0, 0)
+    ];
+
+    for (let v of this.vertices) {
+      this.buffer.pushBackData(v.toArray());
+    }
+    this.buffer.upload();
+    this.buffer.unbind();
+  }
+
+  protected recalculateVertices() {
+    let minX = -(this.width * this.origin.x);
+    let maxX = this.width * (1.0 - this.origin.x);
+
+    let minY = -(this.height * this.origin.y);
+    let maxY = this.height * (1.0 - this.origin.y);
+
+    this.vertices[0].position.set(minX, minY);
+    this.vertices[1].position.set(minX, maxY);
+    this.vertices[2].position.set(maxX, maxY);
+
+    this.vertices[3].position.set(maxX, maxY),
+      this.vertices[4].position.set(maxX, minY),
+      this.vertices[5].position.set(minX, minY);
+
+    this.buffer.clearData();
   }
 }

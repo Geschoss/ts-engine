@@ -1,5 +1,6 @@
 import { isDefined } from '../../lib/ramda';
 import { AnimatedSpriteComponentBuilder } from './animatedSprite';
+import { CollisionComponentBuilder } from './collision';
 import { SpriteComponentBuilder } from './sprite';
 
 export class ComponentManager {
@@ -22,5 +23,6 @@ export class ComponentManager {
   static iinitialize() {
     ComponentManager.registerBuilder(new SpriteComponentBuilder());
     ComponentManager.registerBuilder(new AnimatedSpriteComponentBuilder());
+    ComponentManager.registerBuilder(new CollisionComponentBuilder());
   }
 }

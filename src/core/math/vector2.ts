@@ -15,6 +15,10 @@ export class Vector2 {
     return new Float32Array(this.toArray());
   }
 
+  static distance(a: Vector2, b: Vector2): number {
+    let diff = a.substract(b);
+    return Math.sqrt(diff.x * diff.x + diff.y * diff.y);
+  }
   static one() {
     return new Vector2(1, 1);
   }
@@ -34,5 +38,26 @@ export class Vector2 {
   copyFrom(v: Vector2) {
     this.x = v.x;
     this.y = v.y;
+  }
+
+  add(v: Vector2): Vector2 {
+    this.x += v.x;
+    this.y += v.y;
+    return this;
+  }
+  substract(v: Vector2): Vector2 {
+    this.x -= v.x;
+    this.y -= v.y;
+    return this;
+  }
+  multiply(v: Vector2): Vector2 {
+    this.x *= v.x;
+    this.y *= v.y;
+    return this;
+  }
+  divide(v: Vector2): Vector2 {
+    this.x /= v.x;
+    this.y /= v.y;
+    return this;
   }
 }
