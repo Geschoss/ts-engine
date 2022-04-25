@@ -9,7 +9,27 @@ export class Rectangle2D implements IShape2D {
   width!: number;
   height!: number;
 
-  intersects(other: IShape2D) {
+  public setFromJson(json: any): void {
+    if (isDefined(json.position)) {
+      this.position.setFromJson(json.position);
+    }
+
+    if (isDefined(json.offset)) {
+      this.offset.setFromJson(json.offset);
+    }
+
+    if (!isDefined(json.width)) {
+      throw new Error('Rectangle2D requires width to be present.');
+    }
+    this.width = Number(json.width);
+
+    if (!isDefined(json.height)) {
+      throw new Error('Rectangle2D requires height to be present.');
+    }
+    this.height = Number(json.height);
+  }
+
+  public intersects(other: IShape2D): boolean {
     if (other instanceof Rectangle2D) {
       if (
         this.pointInShape(other.position) ||
@@ -53,7 +73,7 @@ export class Rectangle2D implements IShape2D {
     return false;
   }
 
-  pointInShape(point: Vector2) {
+  public pointInShape(point: Vector2): boolean {
     if (point.x >= this.position.x && point.x <= this.position.x + this.width) {
       if (
         point.y >= this.position.y &&
@@ -62,30 +82,7 @@ export class Rectangle2D implements IShape2D {
         return true;
       }
     }
+
     return false;
-  }
-
-  setFromJson(json: any): void {
-    let position = json.position;
-    if (isDefined(position)) {
-      this.position.setFromJson(position);
-    }
-    let width = json.width;
-    if (!isDefined(width)) {
-      throw new Error('Rectangle2D requires width to be present.');
-    }
-    this.width = Number(width);
-
-    let height = json.height;
-    if (!isDefined(height)) {
-      throw new Error('Rectangle2D requires height to be present.');
-    }
-    this.height = Number(height);
-
-    let offset = json.offset;
-    if (!isDefined(offset)) {
-      throw new Error('Rectangle2D requires offset to be present.');
-    }
-    this.offset.setFromJson( json.offset );
   }
 }
