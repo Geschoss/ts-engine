@@ -1,4 +1,5 @@
 import { isDefined, pickOr } from '../../lib/ramda';
+import { CollisionManager } from '../collision/manager';
 import { Shader } from '../gl/shaders/shader';
 import { Circle2D } from '../graphics/shape2D/cirlce2D';
 import { IShape2D } from '../graphics/shape2D/global';
@@ -51,5 +52,33 @@ export class CollisionComponent extends BaseComponent {
   }
   render(shader: Shader) {
     super.render(shader);
+  }
+
+  load() {
+    super.load();
+    // TODO: Update to handle nested objects/ get world position
+    this.shape.position.copyFrom(
+      this.owner.transform.position.toVector2().add(this.shape.offset)
+    );
+    CollisionManager.registerComponent(this);
+    // Tell the collision manager that we exist.
+  }
+
+  update(time: number) {
+    // TODO: Update to handle nested objects/ get world position
+    this.shape.position.copyFrom(
+      this.owner.transform.position.toVector2().add(this.shape.offset)
+    );
+    super.update(time);
+  }
+
+  onCollisionEntry(other: CollisionComponent) {
+    console.log('onCollisionEntry', this, other);
+  }
+  onCollisionUpdate(other: CollisionComponent) {
+    // console.log('onCollisionUpdate', this, other);
+  }
+  onCollisionExit(other: CollisionComponent) {
+    console.log('onCollisionExit', this, other);
   }
 }

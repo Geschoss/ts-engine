@@ -1,4 +1,5 @@
 import { isDefined } from '../../lib/ramda';
+import { Vector2 } from './vector2';
 
 export class Vector3 {
   x: number;
@@ -12,8 +13,16 @@ export class Vector3 {
   }
 
   static distance(a: Vector3, b: Vector3): number {
-    let diff = a.substract(b);
+    let diff = a.clone().subtract(b);
     return Math.sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+  }
+
+  toVector2() {
+    return new Vector2(this.x, this.y);
+  }
+
+  clone() {
+    return new Vector3(this.x, this.y, this.z);
   }
 
   equals(v: Vector3) {
@@ -71,7 +80,7 @@ export class Vector3 {
     this.z += v.z;
     return this;
   }
-  substract(v: Vector3): Vector3 {
+  subtract(v: Vector3): Vector3 {
     this.x -= v.x;
     this.y -= v.y;
     this.z -= v.z;

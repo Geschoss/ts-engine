@@ -16,7 +16,7 @@ export class Vector2 {
   }
 
   static distance(a: Vector2, b: Vector2): number {
-    let diff = a.substract(b);
+    let diff = a.clone().subtract( b );
     return Math.sqrt(diff.x * diff.x + diff.y * diff.y);
   }
   static one() {
@@ -26,6 +26,9 @@ export class Vector2 {
     return new Vector2();
   }
 
+  clone() {
+    return new Vector2(this.x, this.y);
+  }
   setFromJson(json: any) {
     if (json.x !== undefined) {
       this.x = Number(json.x);
@@ -45,7 +48,7 @@ export class Vector2 {
     this.y += v.y;
     return this;
   }
-  substract(v: Vector2): Vector2 {
+  subtract(v: Vector2): Vector2 {
     this.x -= v.x;
     this.y -= v.y;
     return this;

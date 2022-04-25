@@ -1,6 +1,7 @@
 import { AssetManager } from './assets/manager';
 import { AudioManager } from './audio/manager';
 import { BehaviorManager } from './behaviors/manager';
+import { CollisionManager } from './collision/manager';
 import { ComponentManager } from './components/manager';
 import { GLUtilities } from './gl/gl';
 import { BasicShader } from './gl/shaders/basicShader';
@@ -77,6 +78,7 @@ export class Engine {
     let delta = performance.now() - this.previosTime;
     MessageBus.update(delta);
     ZoneManager.update(delta);
+    CollisionManager.update(delta);
 
     this.previosTime = performance.now();
   }

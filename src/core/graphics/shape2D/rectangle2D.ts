@@ -5,6 +5,7 @@ import { IShape2D } from './global';
 
 export class Rectangle2D implements IShape2D {
   position: Vector2 = Vector2.zero();
+  offset: Vector2 = Vector2.zero();
   width!: number;
   height!: number;
 
@@ -80,5 +81,11 @@ export class Rectangle2D implements IShape2D {
       throw new Error('Rectangle2D requires height to be present.');
     }
     this.height = Number(height);
+
+    let offset = json.offset;
+    if (!isDefined(offset)) {
+      throw new Error('Rectangle2D requires offset to be present.');
+    }
+    this.offset.setFromJson( json.offset );
   }
 }

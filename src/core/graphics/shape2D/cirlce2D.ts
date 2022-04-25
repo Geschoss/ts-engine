@@ -1,10 +1,10 @@
 import { isDefined } from '../../../lib/ramda';
 import { Vector2 } from '../../math/vector2';
 import { IShape2D } from './global';
-import { Rectangle2D } from './rectangle2D';
 
 export class Circle2D implements IShape2D {
   position: Vector2 = Vector2.zero();
+  offset: Vector2 = Vector2.zero();
   radius!: number;
 
   intersects(other: IShape2D): boolean {
@@ -37,6 +37,10 @@ export class Circle2D implements IShape2D {
     if (!isDefined(radius)) {
       throw new Error('Rectangle2D requires radius to be present.');
     }
-    this.radius = Number(radius);
+    let offset = json.radius;
+    if (!isDefined(offset)) {
+      throw new Error('Rectangle2D requires offset to be present.');
+    }
+    this.offset.setFromJson(json.offset);
   }
 }
