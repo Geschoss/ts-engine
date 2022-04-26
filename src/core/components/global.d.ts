@@ -11,8 +11,9 @@ declare type IComponentBuilder = {
 // TODO update type
 declare type IComponent = {
   name: string;
-  setOwner(owner: any): void;
   load(): void;
+  setOwner(owner: any): void;
+  updateReady(): void;
   update(time: number): void;
   render(shader: any): void;
 };

@@ -1,5 +1,6 @@
 declare interface IBehavior {
   name: string;
+  updateReady(): void;
   setOwner(owner: any): void;
   update(time: number): void;
   apply(userData: any): void;

@@ -1,7 +1,11 @@
 import { ImageAsset } from '../assets/imageLoader';
-import { MESSAGE_ASSET_LOADER_ASSET_LOADED } from '../assets/manager';
+import {
+  AssetManager,
+  MESSAGE_ASSET_LOADER_ASSET_LOADED,
+} from '../assets/manager';
 import { Vector2 } from '../math/vector2';
 import { MessageBus } from '../message/bus';
+import { MaterialManager } from './materialManager';
 import { Sprite } from './sprite';
 
 class UVInfo {
@@ -27,6 +31,7 @@ export class AnimatedSprite extends Sprite {
   assetLoaded = false;
   assetWidth = 2;
   assetHeight = 2;
+  isPlaying = false;
 
   constructor(
     name: string,
@@ -50,6 +55,19 @@ export class AnimatedSprite extends Sprite {
     );
   }
 
+  play() {
+    this.isPlaying = true;
+  }
+  stop() {
+    this.isPlaying = false;
+  }
+
+  setFrame(frameNumber: number) {
+    if (frameNumber >= this.frameCount) {
+      throw new Error('Frame is out of range');
+    }
+    this.currentFrame = frameNumber;
+  }
   destroy() {
     super.destroy();
   }
@@ -69,10 +87,17 @@ export class AnimatedSprite extends Sprite {
 
   load() {
     super.load();
+    if (!this.assetLoaded) {
+      this.setupFromMaterial();
+    }
   }
 
   update(time: number) {
+    if (!this.isPlaying) {
+      return;
+    }
     if (!this.assetLoaded) {
+      this.setupFromMaterial();
       return;
     }
     this.currentTime += time;
@@ -122,6 +147,20 @@ export class AnimatedSprite extends Sprite {
       let max = new Vector2(uMax, vMax);
 
       this.frameUVs.push(new UVInfo(min, max));
+    }
+  }
+
+  setupFromMaterial() {
+    if (!this.assetLoaded) {
+      let material = MaterialManager.get(this.materialName);
+      if (material.diffuseTexture.loaded) {
+        if (AssetManager.isLoaded(material.diffuseTextureName)) {
+          this.assetHeight = material.diffuseTexture.height;
+          this.assetWidth = material.diffuseTexture.width;
+          this.assetLoaded = true;
+          this.calculateUVs();
+        }
+      }
     }
   }
 }

@@ -1,3 +1,4 @@
+import { isDefined } from '../lib/ramda';
 import { AssetManager } from './assets/manager';
 import { AudioManager } from './audio/manager';
 import { BehaviorManager } from './behaviors/manager';
@@ -18,36 +19,42 @@ export class Engine {
   private basicShader!: BasicShader;
   private projection!: Matrix4x4;
   private previosTime = 0;
+  gameWidth?: number;
+  gameHeight?: number;
 
-  constructor() {}
+  constructor(width?: number, height?: number) {
+    this.gameHeight = height;
+    this.gameWidth = width;
+  }
 
   start(elementId: string) {
     this.canvas = GLUtilities.initialize(elementId);
+    if (isDefined(this.gameHeight) && isDefined(this.gameWidth)) {
+      this.canvas.style.width = `#{this.gameWidth}px`;
+      this.canvas.style.height = `#{this.gameHeight}px`;
+      this.canvas.width = this.gameWidth;
+      this.canvas.height = this.gameHeight;
+    }
+
     InputManager.initialize();
     AssetManager.initialize();
     ZoneManager.initialize();
     ComponentManager.iinitialize();
     BehaviorManager.iinitialize();
 
-    MessageBus.subscribe('MOUSE_UP_EVENT', this.onMessage.bind(this));
-    MessageBus.subscribe('MOUSE_DOWN_EVENT', this.onMessage.bind(this));
-
-    AudioManager.loadSoundFile('flap', 'assets/sounds/flap.mp3');
-
     this.basicShader = new BasicShader();
     this.basicShader.use();
 
     // Load materials
     MaterialManager.register(
-      new Material('crate', 'assets/textures/crate.jpeg', Color.white())
+      new Material('grass', 'assets/textures/grass.png', Color.white())
     );
-    MaterialManager.register(
-      new Material('wood', 'assets/textures/wood.jpeg', Color.white())
-    );
-
     MaterialManager.register(
       new Material('duck', 'assets/textures/duck.png', Color.white())
     );
+    AudioManager.loadSoundFile('flap', 'assets/sounds/flap.mp3');
+    AudioManager.loadSoundFile('ting', 'assets/sounds/ting.mp3');
+    AudioManager.loadSoundFile('dead', 'assets/sounds/dead.mp3');
 
     this.projection = Matrix4x4.orthographic(
       0,
@@ -61,7 +68,7 @@ export class Engine {
     // TODO: Change this to be read from a game confg
     ZoneManager.changeZone(0);
 
-    gl.clearColor(0, 0, 0.3, 1);
+    gl.clearColor(146 / 255, 206 / 255, 247 / 255, 1);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -100,8 +107,11 @@ export class Engine {
 
   resize() {
     if (!this.canvas) return;
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
+
+    if (!isDefined(this.gameHeight) && !isDefined(this.gameWidth)) {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    }
 
     this.projection = Matrix4x4.orthographic(
       0,

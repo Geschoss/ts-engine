@@ -6,11 +6,15 @@ import { BaseComponent } from './base';
 
 export class SpriteComponentData implements IComponentData {
   name!: string;
+  width!: number;
+  height!: number;
   materialName!: string;
   origin: Vector3 = Vector3.zero();
 
   setFromJson(json: any) {
     this.name = pickOr('', 'name', json);
+    this.width = pickOr(0, 'width', json);
+    this.height = pickOr(0, 'height', json);
     this.materialName = pickOr('', 'materialName', json);
 
     let origin = json.origin;
@@ -31,9 +35,18 @@ export class SpriteComponentBuilder implements IComponentBuilder {
 
 export class SpriteComponent extends BaseComponent {
   sprite: Sprite;
+  width: number;
+  height: number;
   constructor(data: SpriteComponentData) {
     super(data);
-    this.sprite = new Sprite(data.name, data.materialName);
+    this.width = data.width;
+    this.height = data.height;
+    this.sprite = new Sprite(
+      data.name,
+      data.materialName,
+      this.width,
+      this.height
+    );
     if (!data.origin.equals(Vector3.zero())) {
       this.sprite.origin.copyFrom(data.origin);
     }

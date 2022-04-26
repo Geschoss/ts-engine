@@ -36,6 +36,34 @@ export class SimObject {
       this.children.slice(index, 1);
     }
   }
+  getBehaviortByname(name: string): IBehavior | undefined {
+    for (let behavior of this.behaviors) {
+      if (behavior.name === name) {
+        return behavior;
+      }
+    }
+    for (let child of this.children) {
+      let behavior = child.getBehaviortByname(name);
+      if (behavior !== undefined) {
+        return behavior;
+      }
+    }
+    return undefined;
+  }
+  getComponentByname(name: string): IComponent | undefined {
+    for (let component of this.components) {
+      if (component.name === name) {
+        return component;
+      }
+    }
+    for (let child of this.children) {
+      let component = child.getComponentByname(name);
+      if (component !== undefined) {
+        return component;
+      }
+    }
+    return undefined;
+  }
   getObjectByName(name: string): SimObject | undefined {
     if (this.name === name) {
       return this;
@@ -63,6 +91,17 @@ export class SimObject {
     }
     for (let child of this.children) {
       child.load();
+    }
+  }
+  updateReady() {
+    for (let comp of this.components) {
+      comp.updateReady();
+    }
+    for (let behavior of this.behaviors) {
+      behavior.updateReady();
+    }
+    for (let child of this.children) {
+      child.updateReady();
     }
   }
   update(time: number) {

@@ -1,6 +1,7 @@
 import { isDefined } from '../../lib/ramda';
 import { Shader } from '../gl/shaders/shader';
 import { AnimatedSprite } from '../graphics/animatedSprite';
+import { Vector3 } from '../math/vector3';
 import { BaseComponent } from './base';
 import { SpriteComponentData } from './sprite';
 
@@ -12,9 +13,15 @@ export class AnimatedSpriteComponentData
   frameCount!: number;
   frameHeight!: number;
   frameSequence: number[] = [];
+  autoPlay = true;
 
   setFromJson(json: any) {
     super.setFromJson(json);
+
+    let autoPlay = json.autoPlay;
+    if (isDefined(autoPlay)) {
+      this.autoPlay = autoPlay;
+    }
 
     let frameWidth = json.frameWidth;
     if (!isDefined(frameWidth))
@@ -49,8 +56,11 @@ export class AnimatedSpriteComponentBuilder implements IComponentBuilder {
 
 export class AnimatedSpriteComponent extends BaseComponent {
   sprite: AnimatedSprite;
+  autoPlay!: boolean;
+
   constructor(data: AnimatedSpriteComponentData) {
     super(data);
+    this.autoPlay = data.autoPlay;
     this.sprite = new AnimatedSprite(
       data.name,
       data.materialName,
@@ -61,6 +71,17 @@ export class AnimatedSpriteComponent extends BaseComponent {
       data.frameCount,
       data.frameSequence
     );
+    if (!data.origin.equals(Vector3.zero())) {
+      this.sprite.origin.copyFrom(data.origin);
+    }
+  }
+  isPlaying() {
+    this.sprite.isPlaying;
+  }
+  updateReady(): void {
+    if (!this.autoPlay) {
+      this.sprite.stop();
+    }
   }
   load() {
     this.sprite.load();
@@ -74,5 +95,14 @@ export class AnimatedSpriteComponent extends BaseComponent {
     this.sprite.draw(shader, this.owner.worldMatrix);
 
     super.render(shader);
+  }
+  play() {
+    this.sprite.play();
+  }
+  stop() {
+    this.sprite.stop();
+  }
+  setFrame(frameNumber: number) {
+    this.sprite.setFrame(frameNumber);
   }
 }

@@ -14,6 +14,8 @@ export abstract class BaseComponent implements IComponent {
     this.owner = owner;
   }
   load() {}
+  
+  updateReady() {}
   update(time: number) {}
   render(shader: Shader) {}
 }

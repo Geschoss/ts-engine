@@ -1,3 +1,6 @@
+import { isDefined } from '../../lib/ramda';
+import { Vector3 } from './vector3';
+
 export class Vector2 {
   x: number;
   y: number;
@@ -15,8 +18,21 @@ export class Vector2 {
     return new Float32Array(this.toArray());
   }
 
+  toVector3() {
+    return new Vector3(this.x, this.y, 0);
+  }
+
+  set(x?: number, y?: number, z?: number) {
+    if (isDefined(x)) {
+      this.x = x;
+    }
+    if (isDefined(y)) {
+      this.y = y;
+    }
+  }
+
   static distance(a: Vector2, b: Vector2): number {
-    let diff = a.clone().subtract( b );
+    let diff = a.clone().subtract(b);
     return Math.sqrt(diff.x * diff.x + diff.y * diff.y);
   }
   static one() {
@@ -61,6 +77,12 @@ export class Vector2 {
   divide(v: Vector2): Vector2 {
     this.x /= v.x;
     this.y /= v.y;
+    return this;
+  }
+
+  scale(scale: number) {
+    this.x *= scale;
+    this.y *= scale;
     return this;
   }
 }

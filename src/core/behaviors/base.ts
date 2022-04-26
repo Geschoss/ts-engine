@@ -8,10 +8,11 @@ export abstract class BaseBehavoir implements IBehavior {
     this.data = data;
     this.name = data.name;
   }
-
+  
   setOwner(owner: SimObject) {
     this.owner = owner;
   }
+  updateReady() {}
   update(time: number) {}
   apply(userData: any) {}
 }

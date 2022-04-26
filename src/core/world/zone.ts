@@ -34,7 +34,10 @@ export class Zone {
 
   load() {
     this.state = 'LOADING';
+
     this.scene.load();
+    this.scene.root.updateReady();
+
     this.state = 'UPDATING';
   }
   update(time: number) {

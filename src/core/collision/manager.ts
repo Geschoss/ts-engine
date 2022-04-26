@@ -1,4 +1,5 @@
 import { CollisionComponent } from '../components/collision';
+import { MessageBus } from '../message/bus';
 
 type CollisionData = {
   a: CollisionComponent;
@@ -14,15 +15,11 @@ export class CollisionManager {
 
   private constructor() {}
 
-  public static registerComponent(
-    component: CollisionComponent
-  ): void {
+  public static registerComponent(component: CollisionComponent): void {
     CollisionManager._components.push(component);
   }
 
-  public static unRegisterComponent(
-    component: CollisionComponent
-  ): void {
+  public static unRegisterComponent(component: CollisionComponent): void {
     let index = CollisionManager._components.indexOf(component);
     if (index !== -1) {
       CollisionManager._components.slice(index, 1);
@@ -70,11 +67,14 @@ export class CollisionManager {
 
             comp.onCollisionEntry(other);
             other.onCollisionEntry(comp);
-            this._collisionData.push({
+            let col = {
               time: CollisionManager._totalTime,
               a: comp,
               b: other,
-            });
+            };
+            MessageBus.sendPiority('COLLISION_ENTRY:' + comp.name, col);
+            MessageBus.sendPiority('COLLISION_ENTRY:' + other.name, col);
+            this._collisionData.push(col);
           }
         }
       }
@@ -91,15 +91,15 @@ export class CollisionManager {
     }
 
     while (removeData.length !== 0) {
+      // @ts-ignore
       let data: CollisionData = removeData.shift();
       let index = CollisionManager._collisionData.indexOf(data);
       CollisionManager._collisionData.splice(index, 1);
 
       data.a.onCollisionExit(data.b);
       data.b.onCollisionExit(data.a);
+      MessageBus.sendPiority('COLLISION_EXIT:' + data.a.name, data);
+      MessageBus.sendPiority('COLLISION_EXIT:' + data.b.name, data);
     }
-
-    // TODO: REMOVE ME
-    document.title = CollisionManager._collisionData.length.toString();
   }
 }
