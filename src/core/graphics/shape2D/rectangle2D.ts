@@ -5,28 +5,15 @@ import { IShape2D } from './global';
 
 export class Rectangle2D implements IShape2D {
   position: Vector2 = Vector2.zero();
-  offset: Vector2 = Vector2.zero();
+  origin: Vector2 = new Vector2(0.5, 0.5);
   width!: number;
   height!: number;
 
-  public setFromJson(json: any): void {
-    if (isDefined(json.position)) {
-      this.position.setFromJson(json.position);
-    }
-
-    if (isDefined(json.offset)) {
-      this.offset.setFromJson(json.offset);
-    }
-
-    if (!isDefined(json.width)) {
-      throw new Error('Rectangle2D requires width to be present.');
-    }
-    this.width = Number(json.width);
-
-    if (!isDefined(json.height)) {
-      throw new Error('Rectangle2D requires height to be present.');
-    }
-    this.height = Number(json.height);
+  get offset() {
+    return new Vector2(
+      -(this.width * this.origin.x),
+      -(this.height * this.origin.y)
+    );
   }
 
   public intersects(other: IShape2D): boolean {
@@ -51,21 +38,19 @@ export class Rectangle2D implements IShape2D {
     }
 
     if (other instanceof Circle2D) {
-      if (
-        other.pointInShape(this.position) ||
-        other.pointInShape(
-          new Vector2(this.position.x + this.width, this.position.y)
-        ) ||
-        other.pointInShape(
-          new Vector2(
-            this.position.x + this.width,
-            this.position.y + this.height
-          )
-        ) ||
-        other.pointInShape(
-          new Vector2(this.position.x, this.position.y + this.height)
-        )
-      ) {
+      let deltaX =
+        other.position.x -
+        Math.max(
+          this.position.x,
+          Math.min(other.position.x, this.position.x + this.width)
+        );
+      let deltaY =
+        other.position.y -
+        Math.max(
+          this.position.y,
+          Math.min(other.position.y, this.position.y + this.height)
+        );
+      if (deltaX * deltaX + deltaY * deltaY < other.radius * other.radius) {
         return true;
       }
     }
@@ -84,5 +69,25 @@ export class Rectangle2D implements IShape2D {
     }
 
     return false;
+  }
+
+  public setFromJson(json: any): void {
+    if (isDefined(json.position)) {
+      this.position.setFromJson(json.position);
+    }
+
+    if (isDefined(json.origin)) {
+      this.origin.setFromJson(json.origin);
+    }
+
+    if (!isDefined(json.width)) {
+      throw new Error('Rectangle2D requires width to be present.');
+    }
+    this.width = Number(json.width);
+
+    if (!isDefined(json.height)) {
+      throw new Error('Rectangle2D requires height to be present.');
+    }
+    this.height = Number(json.height);
   }
 }

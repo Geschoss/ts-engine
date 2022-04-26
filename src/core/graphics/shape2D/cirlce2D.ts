@@ -5,8 +5,15 @@ import { Rectangle2D } from './rectangle2D';
 
 export class Circle2D implements IShape2D {
   position: Vector2 = Vector2.zero();
-  offset: Vector2 = Vector2.zero();
+  origin: Vector2 = Vector2.zero();
   radius!: number;
+
+  get offset() {
+    return new Vector2(
+      this.radius + this.radius * this.origin.x,
+      this.radius + this.radius * this.origin.y
+    );
+  }
 
   intersects(other: IShape2D): boolean {
     if (other instanceof Circle2D) {
@@ -18,21 +25,20 @@ export class Circle2D implements IShape2D {
     }
 
     if (other instanceof Rectangle2D) {
-      if (
-        this.pointInShape(other.position) ||
-        this.pointInShape(
-          new Vector2(other.position.x + other.width, other.position.y)
-        ) ||
-        this.pointInShape(
-          new Vector2(
-            other.position.x + other.width,
-            other.position.y + other.height
-          )
-        ) ||
-        this.pointInShape(
-          new Vector2(other.position.x, other.position.y + other.height)
-        )
-      ) {
+      let deltaX =
+        this.position.x -
+        Math.max(
+          other.position.x,
+          Math.min(this.position.x, other.position.x + other.width)
+        );
+      let deltaY =
+        this.position.y -
+        Math.max(
+          other.position.y,
+          Math.min(this.position.y, other.position.y + other.height)
+        );
+
+      if (deltaX * deltaX + deltaY * deltaY < this.radius * this.radius) {
         return true;
       }
     }
@@ -59,10 +65,8 @@ export class Circle2D implements IShape2D {
     }
     this.radius = radius;
 
-    let offset = json.offset;
-    if (!isDefined(offset)) {
-      throw new Error('Rectangle2D requires offset to be present.');
+    if (isDefined(json.origin)) {
+      this.origin.setFromJson(json.origin);
     }
-    this.offset.setFromJson(json.offset);
   }
 }
