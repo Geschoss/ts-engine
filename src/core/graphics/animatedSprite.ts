@@ -26,8 +26,8 @@ export class AnimatedSprite extends Sprite {
   frameTime: number = 300;
   frameUVs: UVInfo[] = [];
 
-  currentFrame: number = 0;
-  currentTime: number = 0;
+  currentFrame = 0;
+  currentTime = 0;
   assetLoaded = false;
   assetWidth = 2;
   assetHeight = 2;
@@ -82,6 +82,7 @@ export class AnimatedSprite extends Sprite {
       this.assetHeight = asset.height;
       this.calculateUVs();
       this.assetLoaded = true;
+      this.updateVertices();
     }
   }
 
@@ -107,24 +108,28 @@ export class AnimatedSprite extends Sprite {
       if (this.currentFrame >= this.frameSequence.length) {
         this.currentFrame = 0;
       }
-      let UVMin = this.frameUVs[this.frameSequence[this.currentFrame]].min;
-      let UVMax = this.frameUVs[this.frameSequence[this.currentFrame]].max;
-      this.vertices[0].textCoords.copyFrom(UVMin);
-      this.vertices[1].textCoords = new Vector2(UVMin.x, UVMax.y);
-      this.vertices[2].textCoords.copyFrom(UVMax);
-      this.vertices[3].textCoords.copyFrom(UVMax);
-      this.vertices[4].textCoords = new Vector2(UVMax.x, UVMin.y);
-      this.vertices[5].textCoords.copyFrom(UVMin);
-
-      this.buffer.clearData();
-      for (let v of this.vertices) {
-        this.buffer.pushBackData(v.toArray());
-      }
-      this.buffer.upload();
-      this.buffer.unbind();
+      this.updateVertices();
     }
 
     super.update(time);
+  }
+
+  private updateVertices() {
+    let UVMin = this.frameUVs[this.frameSequence[this.currentFrame]].min;
+    let UVMax = this.frameUVs[this.frameSequence[this.currentFrame]].max;
+    this.vertices[0].textCoords.copyFrom(UVMin);
+    this.vertices[1].textCoords = new Vector2(UVMin.x, UVMax.y);
+    this.vertices[2].textCoords.copyFrom(UVMax);
+    this.vertices[3].textCoords.copyFrom(UVMax);
+    this.vertices[4].textCoords = new Vector2(UVMax.x, UVMin.y);
+    this.vertices[5].textCoords.copyFrom(UVMin);
+
+    this.buffer.clearData();
+    for (let v of this.vertices) {
+      this.buffer.pushBackData(v.toArray());
+    }
+    this.buffer.upload();
+    this.buffer.unbind();
   }
 
   private calculateUVs() {
@@ -159,6 +164,7 @@ export class AnimatedSprite extends Sprite {
           this.assetWidth = material.diffuseTexture.width;
           this.assetLoaded = true;
           this.calculateUVs();
+          this.updateVertices();
         }
       }
     }

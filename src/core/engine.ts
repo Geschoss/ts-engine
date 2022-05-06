@@ -1,3 +1,4 @@
+import './math/extensions';
 import { isDefined } from '../lib/ramda';
 import { AssetManager } from './assets/manager';
 import { AudioManager } from './audio/manager';
@@ -9,7 +10,7 @@ import { BasicShader } from './gl/shaders/basicShader';
 import { Color } from './graphics/color';
 import { Material } from './graphics/material';
 import { MaterialManager } from './graphics/materialManager';
-import { InputManager, MouseEvents } from './input/manager';
+import { InputManager } from './input/manager';
 import { Matrix4x4 } from './math/matrix4x4';
 import { MessageBus } from './message/bus';
 import { ZoneManager } from './world/zoneManager';

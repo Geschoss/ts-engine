@@ -76,7 +76,7 @@ export class AnimatedSpriteComponent extends BaseComponent {
     }
   }
   isPlaying() {
-    this.sprite.isPlaying;
+    return this.sprite.isPlaying;
   }
   updateReady(): void {
     if (!this.autoPlay) {

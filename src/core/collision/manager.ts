@@ -1,7 +1,7 @@
 import { CollisionComponent } from '../components/collision';
 import { MessageBus } from '../message/bus';
 
-type CollisionData = {
+export type CollisionData = {
   a: CollisionComponent;
   b: CollisionComponent;
   time: number;

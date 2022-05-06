@@ -1,5 +1,6 @@
 import { isDefined } from '../../lib/ramda';
 import { KeyboardBehaviorBuilder } from './keyboard';
+import { PlayerBehaviorBuilder } from './player';
 import { RotationBehaviorBuilder } from './rotation';
 
 export class BehaviorManager {
@@ -22,5 +23,6 @@ export class BehaviorManager {
   static iinitialize() {
     BehaviorManager.registerBuilder(new RotationBehaviorBuilder());
     BehaviorManager.registerBuilder(new KeyboardBehaviorBuilder());
+    BehaviorManager.registerBuilder(new PlayerBehaviorBuilder());
   }
 }
