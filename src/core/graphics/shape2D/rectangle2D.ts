@@ -4,21 +4,19 @@ import { Circle2D } from './cirlce2D';
 import { IShape2D } from './global';
 
 export class Rectangle2D implements IShape2D {
-  position: Vector2 = Vector2.zero();
-  origin: Vector2 = new Vector2(0.5, 0.5);
   width!: number;
   height!: number;
 
+  position = Vector2.zero();
+  origin = Vector2.zero();
+
   get offset() {
-    return new Vector2(
-      -(this.width * this.origin.x),
-      -(this.height * this.origin.y)
-    );
+    return new Vector2(this.width * this.origin.x, this.height * this.origin.y);
   }
 
   public intersects(other: IShape2D): boolean {
     if (other instanceof Rectangle2D) {
-      if (
+      return (
         this.pointInShape(other.position) ||
         this.pointInShape(
           new Vector2(other.position.x + other.width, other.position.y)
@@ -32,9 +30,7 @@ export class Rectangle2D implements IShape2D {
         this.pointInShape(
           new Vector2(other.position.x, other.position.y + other.height)
         )
-      ) {
-        return true;
-      }
+      );
     }
 
     if (other instanceof Circle2D) {
@@ -59,15 +55,22 @@ export class Rectangle2D implements IShape2D {
   }
 
   public pointInShape(point: Vector2): boolean {
-    if (point.x >= this.position.x && point.x <= this.position.x + this.width) {
-      if (
-        point.y >= this.position.y &&
-        point.y <= this.position.y + this.height
-      ) {
-        return true;
-      }
-    }
+    let x = this.width < 0 ? this.position.x - this.width : this.position.x;
+    let y = this.height < 0 ? this.position.y - this.height : this.position.y;
 
+    let extentX =
+      this.width < 0 ? this.position.x : this.position.x + this.width;
+    let extentY =
+      this.height < 0 ? this.position.y : this.position.y + this.height;
+
+    if (
+      point.x >= x &&
+      point.x <= extentX &&
+      point.y >= y &&
+      point.y <= extentY
+    ) {
+      return true;
+    }
     return false;
   }
 

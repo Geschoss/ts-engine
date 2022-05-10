@@ -1,6 +1,7 @@
 import { Shader } from '../gl/shaders/shader';
 import { Matrix4x4 } from '../math/matrix4x4';
 import { Transform } from '../math/transform';
+import { Vector3 } from '../math/vector3';
 import { Scene } from './scene';
 
 export class SimObject {
@@ -138,5 +139,12 @@ export class SimObject {
     } else {
       this.worldMatrix.copyFrom(this.localMatrix);
     }
+  }
+  public getWorldPosition() {
+    return new Vector3(
+      this.worldMatrix.data[12],
+      this.worldMatrix.data[13],
+      this.worldMatrix.data[14]
+    );
   }
 }

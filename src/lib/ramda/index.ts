@@ -4,10 +4,10 @@ export function pickOr<O, K extends keyof O>(
   obj: O
 ): O[K] {
   let value = obj[key];
-  if (!value) {
-    return defaultV;
+  if (isDefined(value)) {
+    return value;
   }
-  return value;
+  return defaultV;
 }
 
 export function isNil<R>(x: R): x is R {

@@ -9,9 +9,11 @@ import { BaseComponent } from './base';
 export class CollisionComponentData implements IComponentData {
   name!: string;
   shape!: IShape2D;
+  static = true;
 
   setFromJson(json: any) {
     this.name = pickOr('', 'name', json);
+    this.static = pickOr(true, 'static', json);
 
     let shape = json.shape;
     if (!isDefined(origin)) {
@@ -46,9 +48,12 @@ export class CollisionComponentBuilder implements IComponentBuilder {
 
 export class CollisionComponent extends BaseComponent {
   shape: IShape2D;
+  static: boolean;
+
   constructor(data: CollisionComponentData) {
     super(data);
     this.shape = data.shape;
+    this.static = data.static;
   }
   render(shader: Shader) {
     super.render(shader);
@@ -58,7 +63,7 @@ export class CollisionComponent extends BaseComponent {
     super.load();
     // TODO: Update to handle nested objects/ get world position
     this.shape.position.copyFrom(
-      this.owner.transform.position.toVector2().add(this.shape.offset)
+      this.owner.getWorldPosition().toVector2().subtract(this.shape.offset)
     );
     CollisionManager.registerComponent(this);
     // Tell the collision manager that we exist.
@@ -67,7 +72,7 @@ export class CollisionComponent extends BaseComponent {
   update(time: number) {
     // TODO: Update to handle nested objects/ get world position
     this.shape.position.copyFrom(
-      this.owner.transform.position.toVector2().add(this.shape.offset)
+      this.owner.getWorldPosition().toVector2().subtract(this.shape.offset)
     );
     super.update(time);
   }

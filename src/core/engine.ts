@@ -53,6 +53,15 @@ export class Engine {
     MaterialManager.register(
       new Material('duck', 'assets/textures/duck.png', Color.white())
     );
+    MaterialManager.register(
+      new Material('bg', 'assets/textures/bg.png', Color.white())
+    );
+    MaterialManager.register(
+      new Material('end', 'assets/textures/end.png', Color.white())
+    );
+    MaterialManager.register(
+      new Material('middle', 'assets/textures/middle.png', Color.white())
+    );
     AudioManager.loadSoundFile('flap', 'assets/sounds/flap.mp3');
     AudioManager.loadSoundFile('ting', 'assets/sounds/ting.mp3');
     AudioManager.loadSoundFile('dead', 'assets/sounds/dead.mp3');
@@ -132,3 +141,7 @@ export class Engine {
     }
   }
 }
+
+setTimeout(() => {
+  MessageBus.send("GAME_START")
+}, 1000)

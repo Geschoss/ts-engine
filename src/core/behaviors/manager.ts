@@ -2,6 +2,7 @@ import { isDefined } from '../../lib/ramda';
 import { KeyboardBehaviorBuilder } from './keyboard';
 import { PlayerBehaviorBuilder } from './player';
 import { RotationBehaviorBuilder } from './rotation';
+import { ScrollBehaviorBuilder } from './scroll';
 
 export class BehaviorManager {
   private static registeredBuilders: Record<string, IBehaviorBuilder> = {};
@@ -24,5 +25,6 @@ export class BehaviorManager {
     BehaviorManager.registerBuilder(new RotationBehaviorBuilder());
     BehaviorManager.registerBuilder(new KeyboardBehaviorBuilder());
     BehaviorManager.registerBuilder(new PlayerBehaviorBuilder());
+    BehaviorManager.registerBuilder(new ScrollBehaviorBuilder());
   }
 }
