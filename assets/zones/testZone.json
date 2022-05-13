@@ -25,7 +25,7 @@
           "name": "bgScroller",
           "type": "scroll",
           "velocity": {
-            "x": -220,
+            "x": -20,
             "y": 0
           },
           "minPosition": {
@@ -64,7 +64,7 @@
           "name": "bg2Scroller",
           "type": "scroll",
           "velocity": {
-            "x": -220,
+            "x": -20,
             "y": 0
           },
           "minPosition": {

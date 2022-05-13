@@ -1,6 +1,7 @@
 import { MessageBus } from '../message/bus';
 import { ImageLoader } from './imageLoader';
 import { JsonLoader } from './jsonLoader';
+import { TextLoader } from './textLoader';
 
 export const MESSAGE_ASSET_LOADER_ASSET_LOADED =
   'MESSAGE_ASSET_LOADER_ASSET_LOADED::';
@@ -22,6 +23,7 @@ function managerSDK({ loaders, loadedAssets }: ManagerConf) {
   const initialize = () => {
     AssetManager.register(new ImageLoader());
     AssetManager.register(new JsonLoader());
+    AssetManager.register(new TextLoader());
   };
 
   const load = (assetName: string) => {
@@ -44,9 +46,9 @@ function managerSDK({ loaders, loadedAssets }: ManagerConf) {
     MessageBus.send(MESSAGE_ASSET_LOADER_ASSET_LOADED + asset.name, asset);
   };
 
-  const get = (assetName: string) => {
+  const get = <T>(assetName: string) => {
     if (isLoaded(assetName)) {
-      return loadedAssets.get(assetName);
+      return loadedAssets.get(assetName) as IAsset<T>;
     } else {
       load(assetName);
     }
