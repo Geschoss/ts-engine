@@ -19,6 +19,7 @@ export class TextLoader implements IAssetLoader {
       'load',
       this.onLoaded.bind(this, assetName, request)
     );
+    request.send();
   }
 
   onLoaded(assetName: string, request: XMLHttpRequest) {

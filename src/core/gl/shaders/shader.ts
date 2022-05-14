@@ -20,7 +20,7 @@ export abstract class Shader {
 
     return attribute;
   }
-  getUnifomrLocation(name: string) {
+  getUniformLocation(name: string) {
     const uniform = this.uniforms[name];
     if (uniform == undefined)
       throw new Error(

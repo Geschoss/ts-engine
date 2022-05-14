@@ -25,11 +25,6 @@ export class Texture {
     if (!handle) throw new Error(`Cannot create texture ${name}`);
     this.handle = handle;
 
-    MessageBus.subscribe(
-      MESSAGE_ASSET_LOADER_ASSET_LOADED + this.name,
-      this.onMessage.bind(this)
-    );
-
     this.bind();
     gl.texImage2D(
       gl.TEXTURE_2D,
@@ -45,6 +40,11 @@ export class Texture {
     let asset = AssetManager.get(this.name) as ImageAsset;
     if (asset !== undefined) {
       this.loadTextureFromAsset(asset);
+    } else {
+      MessageBus.subscribe(
+        MESSAGE_ASSET_LOADER_ASSET_LOADED + this.name,
+        this.onMessage.bind(this)
+      );
     }
   }
 

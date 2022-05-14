@@ -24,7 +24,7 @@ export class FontGlyph {
     return Number(FontGlyph.extractString(field));
   }
   static extractString(field: string) {
-    return field.split('"')[1];
+    return field.split('=')[1];
   }
   static fromFields(fields: string[]): IFontGlyph {
     return {
@@ -52,6 +52,11 @@ export class BitmapFont {
 
   assetLoaded = false;
   glyphs: Record<number, IFontGlyph> = {};
+
+  constructor(name: string, fontFileName: string) {
+    this.name = name;
+    this.fontFileName = fontFileName;
+  }
 
   load() {
     let asset = AssetManager.get<string>(this.fontFileName);

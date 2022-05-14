@@ -14,6 +14,7 @@ import { InputManager } from './input/manager';
 import { Matrix4x4 } from './math/matrix4x4';
 import { MessageBus } from './message/bus';
 import { ZoneManager } from './world/zoneManager';
+import { BitmapFontManager } from './graphics/bitmapManager';
 
 export class Engine {
   private canvas!: HTMLCanvasElement;
@@ -46,6 +47,10 @@ export class Engine {
     this.basicShader = new BasicShader();
     this.basicShader.use();
 
+    // Load fonts
+    BitmapFontManager.add('default', 'assets/fonts/text.txt');
+    BitmapFontManager.load();
+
     // Load materials
     MaterialManager.register(
       new Material('grass', 'assets/textures/grass.png', Color.white())
@@ -75,20 +80,18 @@ export class Engine {
       100
     );
 
-    // TODO: Change this to be read from a game confg
-    ZoneManager.changeZone(0);
-
     gl.clearColor(146 / 255, 206 / 255, 247 / 255, 1);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     this.resize();
-    this.loop();
+    this.preloading();
   }
 
   loop() {
     this.update();
     this.render();
+    requestAnimationFrame(this.loop.bind(this));
   }
 
   update() {
@@ -105,14 +108,23 @@ export class Engine {
 
     ZoneManager.render(this.basicShader);
 
-    let projection = this.basicShader.getUnifomrLocation('u_projection');
+    let projection = this.basicShader.getUniformLocation('u_projection');
     gl.uniformMatrix4fv(
       projection,
       false,
       new Float32Array(this.projection.data)
     );
+  }
 
-    requestAnimationFrame(this.loop.bind(this));
+  preloading() {
+    MessageBus.update(0);
+    if (!BitmapFontManager.updateReady()) {
+      requestAnimationFrame(this.preloading.bind(this));
+      return;
+    }
+
+    ZoneManager.changeZone(0);
+    this.loop();
   }
 
   resize() {
@@ -142,6 +154,6 @@ export class Engine {
   }
 }
 
-setTimeout(() => {
-  MessageBus.send("GAME_START")
-}, 1000)
+// setTimeout(() => {
+//   MessageBus.send('GAME_START');
+// }, 1000);

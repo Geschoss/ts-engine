@@ -1,5 +1,6 @@
 import { isDefined } from '../../lib/ramda';
 import { AnimatedSpriteComponentBuilder } from './animatedSprite';
+import { BitmapTextComponentBuilder } from './bitmap';
 import { CollisionComponentBuilder } from './collision';
 import { SpriteComponentBuilder } from './sprite';
 
@@ -24,5 +25,6 @@ export class ComponentManager {
     ComponentManager.registerBuilder(new SpriteComponentBuilder());
     ComponentManager.registerBuilder(new AnimatedSpriteComponentBuilder());
     ComponentManager.registerBuilder(new CollisionComponentBuilder());
+    ComponentManager.registerBuilder(new BitmapTextComponentBuilder());
   }
 }
