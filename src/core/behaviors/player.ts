@@ -5,11 +5,12 @@ import { AnimatedSpriteComponent } from '../components/animatedSprite';
 import { Vector2 } from '../math/vector2';
 import { Vector3 } from '../math/vector3';
 import { MessageBus } from '../message/bus';
-import { BaseBehavoir } from './base';
+import { BaseBehavior } from './base';
 
 export class PlayerBehaviorData implements IBehaviorData {
   name!: string;
   spriteName!: string;
+  scoreCollision!: string;
   playerCollision!: string;
   groundCollision!: string;
   acceleration: Vector2 = new Vector2(0, 920);
@@ -43,17 +44,26 @@ export class PlayerBehaviorData implements IBehaviorData {
       throw new Error('spriteName must be defined in behavior data.');
     }
     this.spriteName = String(spriteName);
+
+    let scoreCollision = json.scoreCollision;
+    if (!isDefined(scoreCollision)) {
+      throw new Error('scoreCollision must be defined in behavior data.');
+    }
+    this.scoreCollision = String(scoreCollision);
   }
 }
 
-export class PlayerBehavior extends BaseBehavoir {
+export class PlayerBehavior extends BaseBehavior {
   acceleration!: Vector2;
   sprite!: AnimatedSpriteComponent;
 
   spriteName!: string;
+  scoreCollision!: string;
   playerCollision!: string;
   groundCollision!: string;
 
+  score = 0;
+  highScore = 0;
   isAlive = true;
   velocity: Vector2 = Vector2.zero();
 
@@ -71,39 +81,69 @@ export class PlayerBehavior extends BaseBehavoir {
     super(data);
     this.spriteName = data.spriteName;
     this.acceleration = data.acceleration;
+    this.scoreCollision = data.scoreCollision;
     this.playerCollision = data.playerCollision;
     this.groundCollision = data.groundCollision;
 
+    MessageBus.subscribe('GAME_READY', () => {
+      MessageBus.send('GAME_HIDE');
+      MessageBus.send('RESET_HIDE');
+      MessageBus.send('SPLASH_SHOW');
+      MessageBus.send('TUTORIAL_HIDE');
+    });
     MessageBus.subscribe('GAME_RESET', () => {
+      MessageBus.send('GAME_HIDE');
+      MessageBus.send('RESET_HIDE');
+      MessageBus.send('SPLASH_HIDE');
+      MessageBus.send('TUTORIAL_SHOW');
       this.reset();
     });
     MessageBus.subscribe('GAME_START', () => {
+      MessageBus.send('GAME_SHOW');
+      MessageBus.send('RESET_HIDE');
+      MessageBus.send('SPLASH_HIDE');
+      MessageBus.send('TUTORIAL_HIDE');
+      this.isPlaying = true;
+      this.isAlive = true;
       this.start();
     });
+    MessageBus.subscribe('PLAYER_DIED', () => {
+      MessageBus.send('RESET_SHOW');
+    });
 
-    MessageBus.subscribe('MOUSE_DOWN_EVENT', () => {
+    MessageBus.subscribe('MOUSE_DOWN', () => {
       this.onFlap();
     });
-    MessageBus.subscribe(
-      'COLLISION_ENTRY:' + this.playerCollision,
-      (message) => {
-        let data = message.context as CollisionData;
-        if (
-          data.a.name === this.groundCollision ||
-          data.b.name === this.groundCollision
-        ) {
-          this.die();
-          this.decelarate();
-        }
+    MessageBus.subscribe('COLLISION_ENTRY', (message) => {
+      let data = message.context as CollisionData;
+      if (
+        data.a.name !== this.playerCollision &&
+        data.b.name !== this.playerCollision
+      ) {
+        return;
+      }
 
-        if (
-          this.pipeNames.indexOf(data.a.name) !== -1 ||
-          this.pipeNames.indexOf(data.b.name) !== -1
-        ) {
-          this.die();
+      if (
+        data.a.name === this.groundCollision ||
+        data.b.name === this.groundCollision
+      ) {
+        this.die();
+        this.decelarate();
+      } else if (
+        this.pipeNames.indexOf(data.a.name) !== -1 ||
+        this.pipeNames.indexOf(data.b.name) !== -1
+      ) {
+        this.die();
+      } else if (
+        data.a.name === this.scoreCollision ||
+        data.b.name === this.scoreCollision
+      ) {
+        if (this.isAlive && this.isPlaying) {
+          this.setScore(this.score + 1);
+          AudioManager.playSound('ting');
         }
       }
-    );
+    });
   }
   update(time: number) {
     let second = time / 1000;
@@ -167,7 +207,7 @@ export class PlayerBehavior extends BaseBehavoir {
     this.isPlaying = false;
     this.sprite.owner.transform.position.copyFrom(this.initialPosition);
     this.sprite.owner.transform.rotation.z = 0;
-
+    this.setScore(0);
     this.velocity.set(0, 0);
     this.acceleration.set(0, 920);
     this.sprite.play();
@@ -182,7 +222,7 @@ export class PlayerBehavior extends BaseBehavoir {
     return this.velocity.y > 220.0;
   }
   shouldNotFlap() {
-    return this.isPlaying || this.velocity.y > 220.0 || !this.isAlive;
+    return !this.isPlaying || this.velocity.y > 220.0 || !this.isAlive;
   }
   die() {
     if (this.isAlive) {
@@ -201,12 +241,15 @@ export class PlayerBehavior extends BaseBehavoir {
       AudioManager.playSound('flap');
     }
   }
-  onRestart(y: number) {
-    this.owner.transform.rotation.z = 0;
-    this.owner.transform.position.set(33, y);
-    this.velocity.set(0, 0);
-    this.acceleration.set(0, 920);
-    this.sprite.play();
+
+  setScore(score: number) {
+    this.score = score;
+    MessageBus.send('counterText:SetText', score);
+    MessageBus.send('scoreText:SetText', score);
+    if (this.score > this.highScore) {
+      this.highScore = this.score;
+      MessageBus.send('bestText:SetText', this.highScore);
+    }
   }
 }
 

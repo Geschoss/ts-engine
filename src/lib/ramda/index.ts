@@ -17,3 +17,11 @@ export function isNil<R>(x: R): x is R {
 export function isDefined<T>(val: T | undefined | null): val is T {
   return val !== undefined && val !== null;
 }
+
+export function pickOrError<R>(key: string, error: string, obj: any): R {
+  const value = obj[key];
+  if (!isDefined(value)) {
+    throw new Error(error);
+  }
+  return value;
+}

@@ -1,6 +1,6 @@
 import { isDefined } from '../../lib/ramda';
 import { Vector3 } from '../math/vector3';
-import { BaseBehavoir } from './base';
+import { BaseBehavior } from './base';
 
 export class RotationBehaviorData implements IBehaviorData {
   name!: string;
@@ -19,7 +19,7 @@ export class RotationBehaviorData implements IBehaviorData {
   }
 }
 
-export class RotationBehavior extends BaseBehavoir {
+export class RotationBehavior extends BaseBehavior {
   private rotation: Vector3;
   constructor(data: RotationBehaviorData) {
     super(data);

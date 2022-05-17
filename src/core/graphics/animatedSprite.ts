@@ -22,8 +22,7 @@ export class AnimatedSprite extends Sprite {
   frameWidth: number;
   frameCount: number;
   frameSequence: number[];
-  // TODO: Make this conf
-  frameTime: number = 300;
+  frameTime: number = 33;
   frameUVs: UVInfo[] = [];
 
   currentFrame = 0;
@@ -41,13 +40,15 @@ export class AnimatedSprite extends Sprite {
     frameWidth: number = 10,
     frameHeight: number = 10,
     frameCount: number = 1,
-    frameSequence: number[] = []
+    frameSequence: number[] = [],
+    frameTime: number = 60,
   ) {
     super(name, materialName, width, height);
     this.frameHeight = frameHeight;
     this.frameWidth = frameWidth;
     this.frameCount = frameCount;
     this.frameSequence = frameSequence;
+    this.frameTime = frameTime;
 
     MessageBus.subscribe(
       MESSAGE_ASSET_LOADER_ASSET_LOADED + this.material.diffuseTextureName,

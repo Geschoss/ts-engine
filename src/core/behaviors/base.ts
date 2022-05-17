@@ -1,6 +1,6 @@
 import { SimObject } from '../world/simObject';
 
-export abstract class BaseBehavoir implements IBehavior {
+export abstract class BaseBehavior implements IBehavior {
   name: string;
   owner!: SimObject;
   protected data: IBehaviorData;

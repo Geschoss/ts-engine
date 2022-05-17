@@ -7,13 +7,14 @@ import { Scene } from './scene';
 export class SimObject {
   readonly id: number;
   readonly name: string;
-  loaded: boolean = false;
   children: SimObject[] = [];
   components: IComponent[] = [];
   behaviors: IBehavior[] = [];
   scene: Scene;
   parent?: SimObject;
 
+  loaded = false;
+  isVisible = true;
   localMatrix: Matrix4x4 = Matrix4x4.identity();
   worldMatrix: Matrix4x4 = Matrix4x4.identity();
 
@@ -119,6 +120,9 @@ export class SimObject {
     }
   }
   render(shader: Shader) {
+    if (!this.isVisible) {
+      return;
+    }
     for (let comp of this.components) {
       comp.render(shader);
     }

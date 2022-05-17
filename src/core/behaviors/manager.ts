@@ -1,8 +1,10 @@
 import { isDefined } from '../../lib/ramda';
 import { KeyboardBehaviorBuilder } from './keyboard';
+import { MouseClickBehaviorBuilder } from './mouse';
 import { PlayerBehaviorBuilder } from './player';
 import { RotationBehaviorBuilder } from './rotation';
 import { ScrollBehaviorBuilder } from './scroll';
+import { VisibilityOnMessageBehaviorBuilder } from './visibilityOnMessage';
 
 export class BehaviorManager {
   private static registeredBuilders: Record<string, IBehaviorBuilder> = {};
@@ -26,5 +28,7 @@ export class BehaviorManager {
     BehaviorManager.registerBuilder(new KeyboardBehaviorBuilder());
     BehaviorManager.registerBuilder(new PlayerBehaviorBuilder());
     BehaviorManager.registerBuilder(new ScrollBehaviorBuilder());
+    BehaviorManager.registerBuilder(new MouseClickBehaviorBuilder());
+    BehaviorManager.registerBuilder(new VisibilityOnMessageBehaviorBuilder());
   }
 }

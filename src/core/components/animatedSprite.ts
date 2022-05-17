@@ -9,6 +9,7 @@ export class AnimatedSpriteComponentData
   extends SpriteComponentData
   implements IComponentData
 {
+  frameTime!: number;
   frameWidth!: number;
   frameCount!: number;
   frameHeight!: number;
@@ -42,6 +43,11 @@ export class AnimatedSpriteComponentData
     if (!isDefined(frameSequence))
       throw new Error('AnimatedSpriteComponentData rquires frameSequence');
     this.frameSequence = frameSequence;
+
+    let frameTime = json.frameTime;
+    if (isDefined(frameTime)) {
+      this.frameTime = frameTime;
+    }
   }
 }
 
@@ -69,7 +75,8 @@ export class AnimatedSpriteComponent extends BaseComponent {
       data.frameWidth,
       data.frameHeight,
       data.frameCount,
-      data.frameSequence
+      data.frameSequence,
+      data.frameTime
     );
     if (!data.origin.equals(Vector3.zero())) {
       this.sprite.origin.copyFrom(data.origin);

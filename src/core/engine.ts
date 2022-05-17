@@ -15,16 +15,19 @@ import { Matrix4x4 } from './math/matrix4x4';
 import { MessageBus } from './message/bus';
 import { ZoneManager } from './world/zoneManager';
 import { BitmapFontManager } from './graphics/bitmapManager';
+import { Vector2 } from './math/vector2';
 
 export class Engine {
   private canvas!: HTMLCanvasElement;
   private basicShader!: BasicShader;
   private projection!: Matrix4x4;
   private previosTime = 0;
-  gameWidth?: number;
-  gameHeight?: number;
+  gameWidth: number;
+  gameHeight: number;
+  aspect!: number;
 
-  constructor(width?: number, height?: number) {
+  isFirstUpdate = true;
+  constructor(width: number, height: number) {
     this.gameHeight = height;
     this.gameWidth = width;
   }
@@ -32,13 +35,10 @@ export class Engine {
   start(elementId: string) {
     this.canvas = GLUtilities.initialize(elementId);
     if (isDefined(this.gameHeight) && isDefined(this.gameWidth)) {
-      this.canvas.style.width = `#{this.gameWidth}px`;
-      this.canvas.style.height = `#{this.gameHeight}px`;
-      this.canvas.width = this.gameWidth;
-      this.canvas.height = this.gameHeight;
+      this.aspect = this.gameWidth / this.gameHeight;
     }
 
-    InputManager.initialize();
+    InputManager.initialize(this.canvas);
     AssetManager.initialize();
     ZoneManager.initialize();
     ComponentManager.iinitialize();
@@ -67,6 +67,25 @@ export class Engine {
     MaterialManager.register(
       new Material('middle', 'assets/textures/middle.png', Color.white())
     );
+    MaterialManager.register(
+      new Material('playbtn', 'assets/textures/playbtn.png', Color.white())
+    );
+    MaterialManager.register(
+      new Material(
+        'restartbtn',
+        'assets/textures/restartbtn.png',
+        Color.white()
+      )
+    );
+    MaterialManager.register(
+      new Material('score', 'assets/textures/score.png', Color.white())
+    );
+    MaterialManager.register(
+      new Material('title', 'assets/textures/title.png', Color.white())
+    );
+    MaterialManager.register(
+      new Material('tutorial', 'assets/textures/tutorial.png', Color.white())
+    );
     AudioManager.loadSoundFile('flap', 'assets/sounds/flap.mp3');
     AudioManager.loadSoundFile('ting', 'assets/sounds/ting.mp3');
     AudioManager.loadSoundFile('dead', 'assets/sounds/dead.mp3');
@@ -89,6 +108,8 @@ export class Engine {
   }
 
   loop() {
+    if (this.isFirstUpdate) {
+    }
     this.update();
     this.render();
     requestAnimationFrame(this.loop.bind(this));
@@ -133,22 +154,56 @@ export class Engine {
     if (!isDefined(this.gameHeight) && !isDefined(this.gameWidth)) {
       this.canvas.width = window.innerWidth;
       this.canvas.height = window.innerHeight;
+      gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+      this.projection = Matrix4x4.orthographic(
+        0,
+        window.innerWidth,
+        window.innerHeight,
+        0,
+        -100.0,
+        100.0
+      );
+    } else {
+      let newWidth = window.innerWidth;
+      let newHeight = window.innerHeight;
+      let newWidthToHeight = newWidth / newHeight;
+      let gameArea = document.getElementById('gameArea') as HTMLElement;
+
+      if (newWidthToHeight > this.aspect) {
+        newWidth = newHeight * this.aspect;
+        gameArea.style.width = newWidth + 'px';
+        gameArea.style.height = newHeight + 'px';
+      } else {
+        newHeight = newWidth / this.aspect;
+        gameArea.style.width = newWidth + 'px';
+        gameArea.style.height = newHeight + 'px';
+      }
+
+      gameArea.style.marginTop = -newHeight / 2 + 'px';
+      gameArea.style.marginLeft = -newWidth / 2 + 'px';
+
+      this.canvas.width = newWidth;
+      this.canvas.height = newHeight;
+      gl.viewport(0, 0, newWidth, newHeight);
+      this.projection = Matrix4x4.orthographic(
+        0,
+        this.gameWidth,
+        this.gameHeight,
+        0,
+        -100,
+        100
+      );
+      let resolutionScale = new Vector2(
+        newWidth / this.gameWidth,
+        newHeight / this.gameHeight
+      );
+
+      InputManager.setResolutionScale(resolutionScale);
     }
-
-    this.projection = Matrix4x4.orthographic(
-      0,
-      this.canvas.width,
-      this.canvas.height,
-      0,
-      -100,
-      100
-    );
-
-    gl.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
 
   onMessage(message: IMessage) {
-    if (message.code === 'MOUSE_DOWN_EVENT') {
+    if (message.code === 'MOUSE_DOWN') {
       AudioManager.playSound('flap');
     }
   }

@@ -10,26 +10,31 @@ export class Rectangle2D implements IShape2D {
   position = Vector2.zero();
   origin = Vector2.zero();
 
+  public constructor(
+    x: number = 0,
+    y: number = 0,
+    width: number = 0,
+    height: number = 0
+  ) {
+    this.position.x = x;
+    this.position.y = y;
+    this.width = width;
+    this.height = height;
+  }
+
   get offset() {
     return new Vector2(this.width * this.origin.x, this.height * this.origin.y);
   }
 
   public intersects(other: IShape2D): boolean {
     if (other instanceof Rectangle2D) {
+      let a = this.getExtents(this);
+      let b = this.getExtents(other);
       return (
-        this.pointInShape(other.position) ||
-        this.pointInShape(
-          new Vector2(other.position.x + other.width, other.position.y)
-        ) ||
-        this.pointInShape(
-          new Vector2(
-            other.position.x + other.width,
-            other.position.y + other.height
-          )
-        ) ||
-        this.pointInShape(
-          new Vector2(other.position.x, other.position.y + other.height)
-        )
+        a.position.x <= b.width &&
+        a.width >= b.position.x &&
+        a.position.y <= b.height &&
+        a.height >= b.position.y
       );
     }
 
@@ -72,6 +77,19 @@ export class Rectangle2D implements IShape2D {
       return true;
     }
     return false;
+  }
+
+  private getExtents(shape: Rectangle2D) {
+    let x = shape.width < 0 ? shape.position.x - shape.width : shape.position.x;
+    let y =
+      shape.height < 0 ? shape.position.y - shape.height : shape.position.y;
+
+    let extentX =
+      shape.width < 0 ? shape.position.x : shape.position.x + shape.width;
+    let extentY =
+      shape.height < 0 ? shape.position.y : shape.position.y + shape.height;
+
+    return new Rectangle2D(x, y, extentX, extentY);
   }
 
   public setFromJson(json: any): void {

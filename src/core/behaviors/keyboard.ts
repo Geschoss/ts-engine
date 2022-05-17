@@ -1,6 +1,6 @@
 import { isDefined } from '../../lib/ramda';
 import { InputManager } from '../input/manager';
-import { BaseBehavoir } from './base';
+import { BaseBehavior } from './base';
 
 export class KeyboardBehaviorData implements IBehaviorData {
   name!: string;
@@ -19,7 +19,7 @@ export class KeyboardBehaviorData implements IBehaviorData {
   }
 }
 
-export class KeyboardBehavior extends BaseBehavoir {
+export class KeyboardBehavior extends BaseBehavior {
   speed: number = 0.1;
   constructor(data: KeyboardBehaviorData) {
     super(data);

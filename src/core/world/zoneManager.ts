@@ -36,11 +36,8 @@ export class ZoneManager {
           console.log(`Cant't find asset by id: ${id}`);
         }
       } else {
-        let code = MESSAGE_ASSET_LOADER_ASSET_LOADED + zonePath; 
-        MessageBus.subscribe(
-          code,
-          ZoneManager.onMessage.bind(this, code)
-        );
+        let code = MESSAGE_ASSET_LOADER_ASSET_LOADED + zonePath;
+        MessageBus.subscribe(code, ZoneManager.onMessage.bind(this, code));
         AssetManager.load(zonePath);
       }
     } else {
@@ -92,5 +89,7 @@ export class ZoneManager {
     ZoneManager.activeZone.initialize(zoneData);
     ZoneManager.activeZone.onActivated();
     ZoneManager.activeZone.load();
+
+    MessageBus.send('GAME_READY', this);
   }
 }

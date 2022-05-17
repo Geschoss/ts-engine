@@ -76,8 +76,7 @@ export class CollisionManager {
               a: comp,
               b: other,
             };
-            MessageBus.sendPiority('COLLISION_ENTRY:' + comp.name, col);
-            MessageBus.sendPiority('COLLISION_ENTRY:' + other.name, col);
+            MessageBus.sendPiority('COLLISION_ENTR', col);
             this._collisionData.push(col);
           }
         }
@@ -102,8 +101,7 @@ export class CollisionManager {
 
       data.a.onCollisionExit(data.b);
       data.b.onCollisionExit(data.a);
-      MessageBus.sendPiority('COLLISION_EXIT:' + data.a.name, data);
-      MessageBus.sendPiority('COLLISION_EXIT:' + data.b.name, data);
+      MessageBus.sendPiority('COLLISION_EXIT', data);
     }
   }
 }

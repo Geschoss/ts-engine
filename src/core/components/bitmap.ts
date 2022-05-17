@@ -2,6 +2,7 @@ import { isDefined } from '../../lib/ramda';
 import { Shader } from '../gl/shaders/shader';
 import { BitmapText } from '../graphics/bitmapText';
 import { Vector3 } from '../math/vector3';
+import { MessageBus } from '../message/bus';
 import { BaseComponent } from './base';
 
 export class BitmapTextComponentData implements IComponentData {
@@ -50,6 +51,10 @@ export class BitmapTextComponent extends BaseComponent {
       this.bitmapText.origin.copyFrom(data.origin);
     }
     this.bitmapText.text = data.text;
+
+    MessageBus.subscribe(this.name + ':SetText', (message) => {
+      this.bitmapText.text = String(message.context);
+    });
   }
   load() {
     this.bitmapText.load();

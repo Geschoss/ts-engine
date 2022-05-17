@@ -1,14 +1,15 @@
 import { isDefined } from '../../lib/ramda';
-import { InputManager } from '../input/manager';
 import { Vector2 } from '../math/vector2';
 import { MessageBus } from '../message/bus';
-import { BaseBehavoir } from './base';
+import { BaseBehavior } from './base';
 
 export class ScrollBehaviorData implements IBehaviorData {
   name!: string;
   startMessage!: string;
   stopMessage!: string;
   resetMessage!: string;
+  minResetY!: number;
+  maxResetY!: number;
 
   velocity: Vector2 = Vector2.zero();
   minPosition: Vector2 = Vector2.zero();
@@ -53,13 +54,25 @@ export class ScrollBehaviorData implements IBehaviorData {
       throw new Error('resetPosition must be defined in behavior data.');
     }
     this.resetPosition.setFromJson(resetPosition);
+
+    let minResetY = json.minResetY;
+    if (isDefined(minResetY)) {
+      this.minResetY = minResetY;
+    }
+
+    let maxResetY = json.maxResetY;
+    if (isDefined(maxResetY)) {
+      this.maxResetY = maxResetY;
+    }
   }
 }
 
-export class ScrollBehavior extends BaseBehavoir {
+export class ScrollBehavior extends BaseBehavior {
   startMessage!: string;
   stopMessage!: string;
   resetMessage!: string;
+  minResetY!: number;
+  maxResetY!: number;
 
   velocity: Vector2 = Vector2.zero();
   minPosition: Vector2 = Vector2.zero();
@@ -73,6 +86,8 @@ export class ScrollBehavior extends BaseBehavoir {
     this.startMessage = data.startMessage;
     this.stopMessage = data.stopMessage;
     this.resetMessage = data.resetMessage;
+    this.minResetY = data.minResetY;
+    this.maxResetY = data.maxResetY;
 
     this.velocity.copyFrom(data.velocity);
     this.minPosition.copyFrom(data.minPosition);
@@ -110,20 +125,35 @@ export class ScrollBehavior extends BaseBehavoir {
       );
     }
 
+    let scrolly = this.minResetY !== undefined && this.maxResetY !== undefined;
     if (
       this.owner.transform.position.x <= this.minPosition.x &&
-      this.owner.transform.position.y <= this.minPosition.y
+      (scrolly ||
+        (!scrolly && this.owner.transform.position.y <= this.minPosition.y))
     ) {
       this.reset();
     }
-    super.update(time);
   }
 
   private reset() {
-    this.owner.transform.position.copyFrom(this.resetPosition.toVector3());
+    if (this.minResetY !== undefined && this.maxResetY !== undefined) {
+      this.owner.transform.position.set(
+        this.resetPosition.x,
+        this.getRandomY()
+      );
+    } else {
+      this.owner.transform.position.copyFrom(this.resetPosition.toVector3());
+    }
   }
   private initial() {
     this.owner.transform.position.copyFrom(this.initialPosition.toVector3());
+  }
+
+  getRandomY() {
+    return (
+      Math.floor(Math.random() * (this.maxResetY - this.minResetY + 1)) +
+      this.minResetY
+    );
   }
 }
 
